@@ -12741,31 +12741,390 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "v-app",
+    { attrs: { id: "vcrm" } },
     [
-      _c(
-        "v-row",
-        { attrs: { align: "center", justify: "space-around" } },
-        [
-          _c("v-btn", { attrs: { depressed: "" } }, [
-            _vm._v("\r\n      Normal\r\n    ")
-          ]),
-          _vm._v(" "),
-          _c("v-btn", { attrs: { depressed: "", color: "success" } }, [
-            _vm._v("\r\n      Primary\r\n    ")
-          ]),
-          _vm._v(" "),
-          _c("v-btn", { attrs: { depressed: "", color: "accent" } }, [
-            _vm._v("\r\n      Error\r\n    ")
-          ]),
-          _vm._v(" "),
-          _c("v-btn", { attrs: { depressed: "", disabled: "" } }, [
-            _vm._v("\r\n      Disabled\r\n    ")
-          ])
-        ],
-        1
-      )
+      _vm.signedIn ? _c("vue-progress-bar") : _vm._e(),
+      _vm._v(" "),
+      !_vm.signedIn ? [_c("router-view")] : _vm._e(),
+      _vm._v(" "),
+      _vm.signedIn
+        ? [
+            _c(
+              "v-navigation-drawer",
+              {
+                staticClass: "blue lighten-5",
+                attrs: {
+                  "mini-variant-width": "70",
+                  width: "250",
+                  light: "",
+                  "mini-variant": _vm.mini,
+                  app: ""
+                },
+                on: {
+                  "update:miniVariant": function($event) {
+                    _vm.mini = $event
+                  },
+                  "update:mini-variant": function($event) {
+                    _vm.mini = $event
+                  }
+                },
+                model: {
+                  value: _vm.drawer,
+                  callback: function($$v) {
+                    _vm.drawer = $$v
+                  },
+                  expression: "drawer"
+                }
+              },
+              [
+                _c(
+                  "v-list",
+                  { staticClass: "pa-0" },
+                  [
+                    _c(
+                      "v-list-item",
+                      { attrs: { tag: "div" } },
+                      [
+                        _c(
+                          "v-list-item-action",
+                          [
+                            _c("v-img", {
+                              staticClass: "avatar",
+                              attrs: {
+                                "max-width": "2.5em",
+                                src: "@/assets/avatar0.png"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-list-item-content",
+                          [
+                            _c("v-list-item-title", [
+                              _vm._v(
+                                _vm._s(_vm.user.firstname) +
+                                  _vm._s(_vm.user.lastname)
+                              )
+                            ])
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-list-item-action",
+                          { staticStyle: { "max-width": "1em" } },
+                          [
+                            _c(
+                              "v-menu",
+                              {
+                                attrs: {
+                                  bottom: "",
+                                  right: "",
+                                  "offset-y": "",
+                                  origin: "bottom right",
+                                  transition: "v-slide-y-transition"
+                                },
+                                scopedSlots: _vm._u(
+                                  [
+                                    {
+                                      key: "activator",
+                                      fn: function(ref) {
+                                        var on = ref.on
+                                        return [
+                                          _c(
+                                            "v-btn",
+                                            _vm._g(
+                                              {
+                                                attrs: {
+                                                  slot: "activator",
+                                                  icon: "",
+                                                  small: "",
+                                                  light: ""
+                                                },
+                                                slot: "activator"
+                                              },
+                                              on
+                                            ),
+                                            [
+                                              _c("v-icon", [
+                                                _vm._v("mdi-dots-vertical")
+                                              ])
+                                            ],
+                                            1
+                                          )
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  null,
+                                  false,
+                                  2811722613
+                                )
+                              },
+                              [
+                                _vm._v(" "),
+                                _c(
+                                  "v-list",
+                                  _vm._l(_vm.userMenus, function(item) {
+                                    return _c(
+                                      "v-list-item",
+                                      {
+                                        key: item.title,
+                                        attrs: { value: "true", router: "" },
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.handleUserActions(item)
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _c(
+                                          "v-list-item-content",
+                                          [
+                                            _c("v-list-item-title", {
+                                              domProps: {
+                                                textContent: _vm._s(item.title)
+                                              }
+                                            })
+                                          ],
+                                          1
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  }),
+                                  1
+                                )
+                              ],
+                              1
+                            )
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-list-item-action",
+                          { staticStyle: { "max-width": "1em" } },
+                          [
+                            _c(
+                              "v-btn",
+                              {
+                                attrs: { icon: "", small: "" },
+                                nativeOn: {
+                                  click: function($event) {
+                                    $event.stopPropagation()
+                                    _vm.mini = !_vm.mini
+                                  }
+                                }
+                              },
+                              [_c("v-icon", [_vm._v("mdi-chevron-left")])],
+                              1
+                            )
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "v-list",
+                  _vm._l(_vm.items, function(item) {
+                    return _c(
+                      "v-list-item",
+                      {
+                        key: item.title,
+                        attrs: { router: "" },
+                        on: {
+                          click: function($event) {
+                            return _vm.handleNavigtiion(item)
+                          }
+                        }
+                      },
+                      [
+                        _c(
+                          "v-list-item-action",
+                          { staticClass: "pr-1 pl-2 mr-1" },
+                          [
+                            _c(
+                              "v-icon",
+                              {
+                                class: _vm.activeMenuItem.includes(item.title)
+                                  ? "blue--text"
+                                  : "",
+                                attrs: { title: item.title }
+                              },
+                              [
+                                _vm._v(
+                                  "\n              " +
+                                    _vm._s(item.icon) +
+                                    "\n            "
+                                )
+                              ]
+                            )
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-list-item-content",
+                          {
+                            class: _vm.activeMenuItem.includes(item.title)
+                              ? "blue--text"
+                              : ""
+                          },
+                          [
+                            _c("v-list-item-title", {
+                              domProps: { textContent: _vm._s(item.title) }
+                            })
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  }),
+                  1
+                )
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "v-app-bar",
+              { attrs: { app: "", elevation: "1" } },
+              [
+                _c("v-app-bar-nav-icon", {
+                  attrs: { light: "" },
+                  nativeOn: {
+                    click: function($event) {
+                      $event.stopPropagation()
+                      _vm.drawer = !_vm.drawer
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("v-spacer"),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "text-xs-center pr-3 mt-2" },
+                  [
+                    _c(
+                      "v-badge",
+                      { attrs: { left: "" } },
+                      [
+                        _c(
+                          "span",
+                          { attrs: { slot: "badge" }, slot: "badge" },
+                          [_vm._v("6")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-icon",
+                          { attrs: { large: "", color: "grey lighten-1" } },
+                          [_vm._v("mdi-bell-outline")]
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-badge",
+                      { attrs: { color: "red" } },
+                      [
+                        _c(
+                          "span",
+                          { attrs: { slot: "badge" }, slot: "badge" },
+                          [_vm._v("!")]
+                        ),
+                        _vm._v(" "),
+                        _c("v-icon", { attrs: { large: "", color: "grey" } }, [
+                          _vm._v("mdi-email-outline")
+                        ])
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "v-btn",
+                  {
+                    attrs: {
+                      light: "",
+                      text: "",
+                      href: "https://github.com/harryho/vue2crm",
+                      target: "_blank"
+                    }
+                  },
+                  [
+                    _c(
+                      "svg",
+                      {
+                        staticClass: "octicon octicon-mark-github",
+                        attrs: {
+                          height: "30",
+                          viewBox: "0 0 16 16",
+                          version: "1.1",
+                          width: "32",
+                          "aria-hidden": "true"
+                        }
+                      },
+                      [
+                        _c("path", {
+                          attrs: {
+                            "fill-rule": "evenodd",
+                            d:
+                              "M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                          }
+                        })
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c("span", { staticStyle: { "margin-left": "0.4rem" } }, [
+                      _vm._v("GitHub")
+                    ])
+                  ]
+                )
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "v-content",
+              [
+                _c(
+                  "v-container",
+                  { attrs: { fluid: "" } },
+                  [_c("router-view")],
+                  1
+                )
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "v-footer",
+              {
+                staticStyle: {
+                  "justify-content": "center",
+                  "text-align": "center"
+                },
+                attrs: { inset: true, app: "" }
+              },
+              [_c("span", [_vm._v("© Vue-CRM 2020")])]
+            )
+          ]
+        : _vm._e()
     ],
-    1
+    2
   )
 }
 var staticRenderFns = []
@@ -15939,7 +16298,177 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("h1", [_vm._v("Test")])
+  return _c(
+    "v-container",
+    { attrs: { "fill-height": "", "justify-center": "", "align-center": "" } },
+    [
+      _c(
+        "v-flex",
+        { attrs: { xs12: "", sm6: "", md4: "", lg3: "" } },
+        [
+          _c(
+            "v-card",
+            { staticClass: "mt-0 pt-0", attrs: { elevation: "2" } },
+            [
+              _c("v-card-title", { staticClass: "blue darken-1" }, [
+                _c("h4", { staticStyle: { color: "white" } }, [
+                  _vm._v("Vue-CRM 2.0")
+                ])
+              ]),
+              _vm._v(" "),
+              _c("v-card-text", { staticClass: "mt-10" }, [
+                _c(
+                  "form",
+                  {
+                    on: {
+                      submit: function($event) {
+                        $event.preventDefault()
+                        return _vm.login($event)
+                      }
+                    }
+                  },
+                  [
+                    _c(
+                      "v-layout",
+                      { attrs: { row: "", wrap: "" } },
+                      [
+                        _c(
+                          "v-flex",
+                          { attrs: { xs12: "", md4: "" } },
+                          [_c("v-subheader", [_vm._v("User ID")])],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-flex",
+                          { attrs: { xs12: "", md8: "" } },
+                          [
+                            _c("v-text-field", {
+                              staticClass: "input-group--focused mr-2",
+                              attrs: {
+                                name: "email",
+                                label: "email",
+                                value: "Input text"
+                              },
+                              model: {
+                                value: _vm.email,
+                                callback: function($$v) {
+                                  _vm.email = $$v
+                                },
+                                expression: "email"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-layout",
+                      { attrs: { row: "", wrap: "" } },
+                      [
+                        _c(
+                          "v-flex",
+                          { attrs: { xs12: "", md4: "" } },
+                          [_c("v-subheader", [_vm._v("Password")])],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-flex",
+                          { attrs: { xs12: "", md8: "" } },
+                          [
+                            _c("v-text-field", {
+                              staticClass: "input-group--focused mr-2",
+                              attrs: {
+                                name: "password",
+                                type: "password",
+                                label: "password",
+                                value: "Input text"
+                              },
+                              model: {
+                                value: _vm.pass,
+                                callback: function($$v) {
+                                  _vm.pass = $$v
+                                },
+                                expression: "pass"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-card-actions",
+                      [
+                        _c(
+                          "v-btn",
+                          { attrs: { elevation: "4", type: "submit" } },
+                          [_vm._v("login")]
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _vm.error
+                      ? _c(
+                          "v-snackbar",
+                          {
+                            attrs: {
+                              timeout: _vm.timeout,
+                              top: true,
+                              "multi-line": _vm.mode === "multi-line",
+                              vertical: _vm.mode === "vertical"
+                            },
+                            model: {
+                              value: _vm.error,
+                              callback: function($$v) {
+                                _vm.error = $$v
+                              },
+                              expression: "error"
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n            " +
+                                _vm._s(_vm.text) +
+                                "\n            "
+                            ),
+                            _c(
+                              "v-btn",
+                              {
+                                staticClass: "pink--text",
+                                attrs: { text: "" },
+                                nativeOn: {
+                                  click: function($event) {
+                                    _vm.error = false
+                                  }
+                                }
+                              },
+                              [_vm._v("Close")]
+                            )
+                          ],
+                          1
+                        )
+                      : _vm._e()
+                  ],
+                  1
+                )
+              ])
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
