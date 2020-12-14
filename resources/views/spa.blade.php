@@ -7,12 +7,8 @@
   <title>Vue SPA Demo</title>
 </head>
 <body>
-  <div id="app">
-    <app></app>
-  </div>
 
-  <h1>hello</h1>
-
+  <div id="app"></div>
   <script src="{{ mix('js/app.js') }}"></script>
 </body>
 </html>

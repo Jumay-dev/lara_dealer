@@ -19,6 +19,11 @@
     "vue": "^2.1.10"
   },
   "dependencies": {
-    "vue-router": "^3.4.9"
+    "@mdi/font": "^5.8.55",
+    "vue-cli-plugin-vuetify-preset-fortnightly": "^1.0.4",
+    "vue-progressbar": "^0.7.5",
+    "vue-router": "^3.4.9",
+    "vuetify": "^2.3.21",
+    "vuetify-loader": "^1.6.0"
   }
 }
