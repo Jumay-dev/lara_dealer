@@ -1,3 +1,30 @@
 <template>
-    <h1>Main page</h1>
+<v-app>
+  <v-row
+    align="center"
+    justify="space-around"
+  >
+    <v-btn depressed>
+      Normal
+    </v-btn>
+    <v-btn
+      depressed
+      color="success"
+    >
+      Primary
+    </v-btn>
+    <v-btn
+      depressed
+      color="accent"
+    >
+      Error
+    </v-btn>
+    <v-btn
+      depressed
+      disabled
+    >
+      Disabled
+    </v-btn>
+  </v-row>
+  </v-app>
 </template>
