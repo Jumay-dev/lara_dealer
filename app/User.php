@@ -3,9 +3,10 @@
 namespace App;
 
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-class User extends Authenticatable implements JWRSubject
+
+class User extends Authenticatable
 {
     use Notifiable;
 
@@ -27,11 +28,20 @@ class User extends Authenticatable implements JWRSubject
         'password', 'remember_token',
     ];
 
-        /**
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
-     */
+    */
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -39,9 +49,9 @@ class User extends Authenticatable implements JWRSubject
 
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
-     *
-     * @return array
-     */
+    *
+    * @return array
+    */
     public function getJWTCustomClaims()
     {
         return [];

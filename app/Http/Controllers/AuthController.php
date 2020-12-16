@@ -12,7 +12,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'registration']]);
+        $this->middleware('auth:api', ['except' => ['login', 'registration', 'test']]);
     }
 
     /**
@@ -29,13 +29,6 @@ class AuthController extends Controller
         }
 
         return $this->respondWithToken($token);
-    }
-
-    public function test(Request $request) {
-        $creds = $request->only(['email', 'password']);
-        $token = auth()->attempt($creds);
-
-        return $token;
     }
 
     /**
@@ -63,8 +56,7 @@ class AuthController extends Controller
      */
     public function me()
     {
-        // return response()->json(auth()->user());
-        return response()->json('okay');
+        return response()->json(auth()->user());
     }
 
     /**
@@ -87,6 +79,11 @@ class AuthController extends Controller
     public function refresh()
     {
         return $this->respondWithToken(auth()->refresh());
+    }
+
+    public function test()
+    {
+        return ['success' => true, 'token' => 'JHKKJFHSBKJFHBSJD'];
     }
 
     /**
