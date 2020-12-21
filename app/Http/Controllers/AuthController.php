@@ -1,7 +1,10 @@
 <?php namespace App\Http\Controllers;
 
 use App\User;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\RegistersUsers;
 
 class AuthController extends Controller
 {
@@ -46,11 +49,13 @@ class AuthController extends Controller
         $email = request('email');
         $password = request('password');
 
-        $user = new User();
-        $user->name = $name;
-        $user->email = $email;
-        $user->password = Hash::make($password);
-        $user->save();
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make($password),
+        ]);
+        $user->assignRole('manager');
+        // $user->save();
 
         return response()->json(['message' => 'Successfully registration!']);
     }
