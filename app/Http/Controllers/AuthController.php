@@ -36,7 +36,8 @@ class AuthController extends Controller
         return response()->json([
             'token' => $this->respondWithToken($token), 
             'user' => auth()->user(),
-            'success' => true
+            'success' => true,
+            'role' => auth()->user()->getRoleNames()
         ]);
     }
 
