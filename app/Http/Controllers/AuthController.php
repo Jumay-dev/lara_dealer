@@ -54,7 +54,7 @@ class AuthController extends Controller
             'email' => $email,
             'password' => Hash::make($password),
         ]);
-        $user->assignRole('manager');
+        $user->assignRole('guest');
         // $user->save();
 
         return response()->json(['message' => 'Successfully registration!']);
