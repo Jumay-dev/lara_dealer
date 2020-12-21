@@ -32,12 +32,13 @@ class AuthController extends Controller
         }
 
         // $token = auth()->attempt($credentials);
+        $user = auth()->user();
+        $user['role'] = auth()->user()->getRoleNames();
 
         return response()->json([
             'token' => $this->respondWithToken($token), 
-            'user' => auth()->user(),
+            'user' => $user,
             'success' => true,
-            'role' => auth()->user()->getRoleNames()
         ]);
     }
 
@@ -58,7 +59,7 @@ class AuthController extends Controller
         $user->assignRole('guest');
         // $user->save();
 
-        return response()->json(['message' => 'Successfully registration!']);
+        return response()->json(['message' => 'Successfully registration!', 'success' => true]);
     }
 
     /**
@@ -68,7 +69,13 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        $user = auth()->user();
+        $user['role'] = auth()->user()->getRoleNames();
+
+        return response()->json([
+            'user' => $user,
+            'success' => true,
+        ]);
     }
 
     /**
