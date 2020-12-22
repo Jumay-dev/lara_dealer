@@ -23,6 +23,17 @@ Route::group([
     Route::post('me', 'AuthController@me');
 });
 
+Route::group([
+    'prefix' => 'users'
+], function() {
+    Route::post('all', 'UsersController@all');
+    Route::post('create', 'UsersController@create');
+    Route::post('read', 'UsersController@read');
+    Route::post('update', 'UsersController@update');
+    Route::post('delete', 'UsersController@delete');
+    Route::post('search', 'UsersController@search');
+});
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
