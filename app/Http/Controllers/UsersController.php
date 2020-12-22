@@ -33,10 +33,19 @@ class UsersController extends Controller
     }
 
     public function create() {
-        return response()->json([
-            'success' => true,
-            'answer' => null
+        $name = request('name');
+        $email = request('email');
+        $password = request('password');
+
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make($password),
         ]);
+        $user->assignRole('guest');
+        // $user->save();
+
+        return response()->json(['message' => 'Successfully registration!', 'success' => true]);
     }
 
     public function read() {
