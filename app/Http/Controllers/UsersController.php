@@ -73,42 +73,64 @@ class UsersController extends Controller
             'name' => $user->name,
             'email' => $user->email,
         ]);
-        if(DB::table('meta_users')->where('id', $user['id'])) {
-            DB::table('meta_users')->where('id', $user['id'])->update([
-                'user_id' => $user['id'],
-                'name' => $user_meta['name'],	
-                'surname' => $user_meta['surname'],	
-                'patronymic' => $user_meta['patronymic'],
-                'phone' => $user_meta['phone'],	
-                'email' => $user_meta['email'],	
-                'company_id' => $user_meta['company_id'],	
-                'created_by' => $user_meta['created_by'],
-                'updated_by' => $user_meta['updated_by']
-            ]);
-        } else {
-            DB::table('meta_users')->insert([
-                'user_id' => $user['id'],
-                'name' => $user_meta['name'],	
-                'surname' => $user_meta['surname'],	
-                'patronymic' => $user_meta['patronymic'],
-                'phone' => $user_meta['phone'],	
-                'email' => $user_meta['email'],	
-                'company_id' => $user_meta['company_id'],	
-                'created_by' => $user_meta['created_by'],
-                'updated_by' => $user_meta['updated_by']
-            ]);
+        if ($user_meta) {
+            if(DB::table('meta_users')->where('id', $user['id'])) {
+                DB::table('meta_users')->where('id', $user['id'])->update([
+                    'user_id' => $user['id'],
+                    'name' => $user_meta['name'],	
+                    'surname' => $user_meta['surname'],	
+                    'patronymic' => $user_meta['patronymic'],
+                    'phone' => $user_meta['phone'],	
+                    'email' => $user_meta['email'],	
+                    'company_id' => $user_meta['company_id'],	
+                    'created_by' => $user_meta['created_by'],
+                    'updated_by' => $user_meta['updated_by']
+                ]);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'user and meta updated'
+                ]);
+            } else {
+                DB::table('meta_users')->insert([
+                    'user_id' => $user['id'],
+                    'name' => $user_meta['name'],	
+                    'surname' => $user_meta['surname'],	
+                    'patronymic' => $user_meta['patronymic'],
+                    'phone' => $user_meta['phone'],	
+                    'email' => $user_meta['email'],	
+                    'company_id' => $user_meta['company_id'],	
+                    'created_by' => $user_meta['created_by'],
+                    'updated_by' => $user_meta['updated_by']
+                ]);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'user updated and meta created'
+                ]);
+            }
         }
         return response()->json([
             'success' => true,
-            'answer' => null
+            'message' => 'user updated'
         ]);
     }
 
     public function delete() {
+        $user = request(['user']);
+        DB::table('meta_users')->where('user_id', $user['id'])->delete();
+        DB::table('model_has_roles')->where('model_id', $user['id'])->delete();
+        DB::table('users')->where('id', $user['id'])->delete();
+
+        if(DB::table('users')->where('id', $user['id'])) {
+            return response()->json([
+                'success' => true,
+                'message' => 'user deleted succeffuly with its meta and roles'
+            ]);
+        }
         return response()->json([
-            'success' => true,
-            'answer' => null
+            'success' => false,
+            'message' => 'user deleting failed'
         ]);
+
     }
 
     public function search() {
