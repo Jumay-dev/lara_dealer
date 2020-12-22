@@ -40,13 +40,64 @@ class UsersController extends Controller
     }
 
     public function read() {
+        $id = request(['id']);
+        if (isset($id)) {
+            $user = DB::table('users')->where('id', $id)->first();
+            if ($user !== null) {
+                $user_meta = DB::table('meta_users')->where('id', $id)->first();
+                return response()->json([
+                    'success' => true,
+                    'answer' => [
+                        'user' => $user,
+                        'user_meta' => $user_meta
+                    ]
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'answer' => 'user not found'
+                ]);
+            }
+        }
         return response()->json([
-            'success' => true,
-            'answer' => null
+            'success' => false,
+            'answer' => 'id is not setted'
         ]);
+
     }
 
     public function update() {
+        $user = request(['user']);
+        $user_meta = request(['user_meta']);
+        DB::table('users')->where('id', $user['id'])->update([
+            'name' => $user->name,
+            'email' => $user->email,
+        ]);
+        if(DB::table('meta_users')->where('id', $user['id'])) {
+            DB::table('meta_users')->where('id', $user['id'])->update([
+                'user_id' => $user['id'],
+                'name' => $user_meta['name'],	
+                'surname' => $user_meta['surname'],	
+                'patronymic' => $user_meta['patronymic'],
+                'phone' => $user_meta['phone'],	
+                'email' => $user_meta['email'],	
+                'company_id' => $user_meta['company_id'],	
+                'created_by' => $user_meta['created_by'],
+                'updated_by' => $user_meta['updated_by']
+            ]);
+        } else {
+            DB::table('meta_users')->insert([
+                'user_id' => $user['id'],
+                'name' => $user_meta['name'],	
+                'surname' => $user_meta['surname'],	
+                'patronymic' => $user_meta['patronymic'],
+                'phone' => $user_meta['phone'],	
+                'email' => $user_meta['email'],	
+                'company_id' => $user_meta['company_id'],	
+                'created_by' => $user_meta['created_by'],
+                'updated_by' => $user_meta['updated_by']
+            ]);
+        }
         return response()->json([
             'success' => true,
             'answer' => null
