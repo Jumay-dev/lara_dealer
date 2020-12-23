@@ -34,6 +34,6 @@ Route::group([
     Route::post('search', 'UsersController@search');
 });
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });

@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\User;
 use Symfony\Component\Security\Core\Security;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\RegistersUsers;
 
 class UsersController extends Controller
 {
@@ -58,7 +62,8 @@ class UsersController extends Controller
                     'success' => true,
                     'answer' => [
                         'user' => $user,
-                        'user_meta' => $user_meta
+                        'user_meta' => $user_meta,
+                        'check' => Auth::check()
                     ]
                 ]);
             } else {
@@ -76,50 +81,62 @@ class UsersController extends Controller
     }
 
     public function update() {
-        $user = request(['user']);
-        $user_meta = request(['user_meta']);
-        DB::table('users')->where('id', $user['id'])->update([
-            'name' => $user->name,
-            'email' => $user->email,
-        ]);
-        if ($user_meta) {
-            if(DB::table('meta_users')->where('id', $user['id'])) {
-                DB::table('meta_users')->where('id', $user['id'])->update([
-                    'user_id' => $user['id'],
-                    'name' => $user_meta['name'],	
-                    'surname' => $user_meta['surname'],	
-                    'patronymic' => $user_meta['patronymic'],
-                    'phone' => $user_meta['phone'],	
-                    'email' => $user_meta['email'],	
-                    'company_id' => $user_meta['company_id'],	
-                    'created_by' => $user_meta['created_by'],
-                    'updated_by' => $user_meta['updated_by']
-                ]);
-                return response()->json([
-                    'success' => true,
-                    'message' => 'user and meta updated'
-                ]);
-            } else {
-                DB::table('meta_users')->insert([
-                    'user_id' => $user['id'],
-                    'name' => $user_meta['name'],	
-                    'surname' => $user_meta['surname'],	
-                    'patronymic' => $user_meta['patronymic'],
-                    'phone' => $user_meta['phone'],	
-                    'email' => $user_meta['email'],	
-                    'company_id' => $user_meta['company_id'],	
-                    'created_by' => $user_meta['created_by'],
-                    'updated_by' => $user_meta['updated_by']
-                ]);
-                return response()->json([
-                    'success' => true,
-                    'message' => 'user updated and meta created'
-                ]);
+        $user = json_decode(request('user'));
+        $user_meta = json_decode(request('user_meta'));
+
+        // return response()->json([
+        //     'success' => false,
+        //     'message' => json_decode($user)
+        // ]);
+
+        if($user) {
+            DB::table('users')->where('id', $user->id)->update([
+                'name' => $user->name,
+                'email' => $user->email,
+            ]);
+            if ($user_meta) {
+                if(DB::table('meta_users')->where('user_id', $user->id)->first()) {
+                    DB::table('meta_users')->where('user_id', $user->id)->update([
+                        'user_id' => $user->id,
+                        'name' => $user_meta->name,	
+                        'surname' => $user_meta->surname,	
+                        'patronymic' => $user_meta->patronymic,
+                        'phone' => $user_meta->phone,	
+                        'email' => $user->email,	
+                        'company_id' => $user_meta->company_id,	
+                        'created_by' => $user_meta->created_by,
+                        'updated_by' => $user_meta->updated_by
+                    ]);
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'user and meta updated',
+                    ]);
+                } else {
+                    DB::table('meta_users')->insert([
+                        'user_id' => $user->id,
+                        'name' => $user_meta->name,	
+                        'surname' => $user_meta->surname,	
+                        'patronymic' => $user_meta->patronymic,
+                        'phone' => $user_meta->phone,	
+                        'email' => $user->email,	
+                        'company_id' => $user_meta->company_id,	
+                        'created_by' => $user_meta->created_by,
+                        'updated_by' => $user_meta->updated_by
+                    ]);
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'user updated and meta created'
+                    ]);
+                }
             }
+            return response()->json([
+                'success' => true,
+                'message' => 'user updated'
+            ]);
         }
         return response()->json([
-            'success' => true,
-            'message' => 'user updated'
+            'success' => false,
+            'message' => 'user not setted'
         ]);
     }
 
