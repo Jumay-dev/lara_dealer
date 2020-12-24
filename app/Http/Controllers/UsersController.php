@@ -46,7 +46,7 @@ class UsersController extends Controller
             'email' => $email,
             'password' => Hash::make($password),
         ]);
-        $user->assignRole('guest');
+        $user->assignRole('employee');
         // $user->save();
 
         return response()->json(['message' => 'Successfully registration!', 'success' => true]);
@@ -91,54 +91,62 @@ class UsersController extends Controller
         $user = json_decode(request('user'));
         $user_meta = json_decode(request('user_meta'));
         if (Auth::check()) {
-            if($user) {
-                DB::table('users')->where('id', $user->id)->update([
-                    'name' => $user->name,
-                    'email' => $user->email,
-                ]);
-                if ($user_meta) {
-                    if(DB::table('meta_users')->where('user_id', $user->id)->first()) {
-                        DB::table('meta_users')->where('user_id', $user->id)->update([
-                            'user_id' => $user->id,
-                            'name' => $user_meta->name,	
-                            'surname' => $user_meta->surname,	
-                            'patronymic' => $user_meta->patronymic,
-                            'phone' => $user_meta->phone,	
-                            'email' => $user->email,	
-                            'company_id' => $user_meta->company_id,	
-                            'created_by' => $user_meta->created_by,
-                            'updated_by' => $user_meta->updated_by
-                        ]);
-                        return response()->json([
-                            'success' => true,
-                            'message' => 'user and meta updated',
-                        ]);
-                    } else {
-                        DB::table('meta_users')->insert([
-                            'user_id' => $user->id,
-                            'name' => $user_meta->name,	
-                            'surname' => $user_meta->surname,	
-                            'patronymic' => $user_meta->patronymic,
-                            'phone' => $user_meta->phone,	
-                            'email' => $user->email,	
-                            'company_id' => $user_meta->company_id,	
-                            'created_by' => $user_meta->created_by,
-                            'updated_by' => $user_meta->updated_by
-                        ]);
-                        return response()->json([
-                            'success' => true,
-                            'message' => 'user updated and meta created'
-                        ]);
+            $quser = auth()->user();
+            //$quser->getPermissionsViaRoles()
+            if ($quser->hasPermissionTo('project_create')) {
+                if($user) {
+                    DB::table('users')->where('id', $user->id)->update([
+                        'name' => $user->name,
+                        'email' => $user->email,
+                    ]);
+                    if ($user_meta) {
+                        if(DB::table('meta_users')->where('user_id', $user->id)->first()) {
+                            DB::table('meta_users')->where('user_id', $user->id)->update([
+                                'user_id' => $user->id,
+                                'name' => $user_meta->name,	
+                                'surname' => $user_meta->surname,	
+                                'patronymic' => $user_meta->patronymic,
+                                'phone' => $user_meta->phone,	
+                                'email' => $user->email,	
+                                'company_id' => $user_meta->company_id,	
+                                'created_by' => $user_meta->created_by,
+                                'updated_by' => $user_meta->updated_by
+                            ]);
+                            return response()->json([
+                                'success' => true,
+                                'message' => 'user and meta updated',
+                            ]);
+                        } else {
+                            DB::table('meta_users')->insert([
+                                'user_id' => $user->id,
+                                'name' => $user_meta->name,	
+                                'surname' => $user_meta->surname,	
+                                'patronymic' => $user_meta->patronymic,
+                                'phone' => $user_meta->phone,	
+                                'email' => $user->email,	
+                                'company_id' => $user_meta->company_id,	
+                                'created_by' => $user_meta->created_by,
+                                'updated_by' => $user_meta->updated_by
+                            ]);
+                            return response()->json([
+                                'success' => true,
+                                'message' => 'user updated and meta created'
+                            ]);
+                        }
                     }
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'user updated'
+                    ]);
                 }
                 return response()->json([
-                    'success' => true,
-                    'message' => 'user updated'
+                    'success' => false,
+                    'message' => 'user not setted'
                 ]);
             }
             return response()->json([
                 'success' => false,
-                'message' => 'user not setted'
+                'message' => 'access denied by permission policy'
             ]);
         } else {
             return response()->json([
