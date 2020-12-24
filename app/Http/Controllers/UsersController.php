@@ -15,7 +15,7 @@ class UsersController extends Controller
 {
     public function all() {
         // $credentials = request(['token']);
-        // $user = getUser($credentials['token']);
+        // $user = getUser($credentials['token']); 
         $users = User::all();
         $roles = DB::table('roles')->get();
         foreach($users as $user) {

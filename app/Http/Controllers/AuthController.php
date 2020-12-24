@@ -68,15 +68,20 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function me()
-    {
+    {   if(Auth::check()) {
         $user = auth()->user();
-        // $user['role'] = auth()->user()->getRoleNames();
+        $user['role'] = auth()->user()->getRoleNames();
 
         return response()->json([
             'user' => $user,
             'success' => true,
         ]);
-        // return response()->json(auth()->user());
+        } else {
+            return response()->json([
+                'message' => 'user is not logged in',
+                'success' => false,
+            ]);
+        }
     }
 
     /**
