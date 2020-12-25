@@ -13,11 +13,11 @@ class MetaUser extends ExtraModel
         return "project";
     }
 
-    public function save(array $options = [])
+    public function saveOrFail(array $options = [])
     {
-//        if (!$this->created_by) {
-//            $this->created_by = auth()->user()->id;
-//        }
-        return parent::save($options);
+        if (!$this->created_by) {
+            $this->created_by = auth()->user()->id;
+        }
+        return parent::saveOrFail($options);
     }
 }

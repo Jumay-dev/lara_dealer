@@ -27,7 +27,7 @@ class UsersController extends Controller
         $user->updated_by = 11;
 //        $user->created_by = 11;
         try {
-            $user->save();
+            $user->saveOrFail();
             $result = ($user->id)?"win":"fuck";
             return response()->json([
                 'success' => true,
@@ -36,8 +36,9 @@ class UsersController extends Controller
         } catch(\Exception $e) {
             return response()->json([
                 'success' => false,
-                'result' => $result
+                'error' => $e
             ]);
+//            return back()->withError($e->getMessage())->withInput();
         }
 //        return response()->json([$result]);
     }

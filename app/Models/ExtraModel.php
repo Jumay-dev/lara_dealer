@@ -22,14 +22,14 @@ abstract class ExtraModel extends Model
         return static::setObject(); // Здесь действует позднее статическое связывание
     }
 
-    public function save(array $options = [])
+    public function saveOrFail(array $options = [])
     {
 
         $user = auth()->user();
 
         if ($user) {
             if ($user->hasPermissionTo(static::getObject().'_create')) {
-                return parent::save($options);
+                return parent::saveOrFail($options);
             }
             throw new \Exception('Недостаточно прав');
         }
