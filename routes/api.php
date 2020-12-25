@@ -26,6 +26,7 @@ Route::group([
 Route::group([
     'prefix' => 'users'
 ], function() {
+    Route::post('test', 'UsersController@test');
     Route::post('all', 'UsersController@all');
     Route::post('create', 'UsersController@create');
     Route::post('read', 'UsersController@read');

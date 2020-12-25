@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+include('C:/OpenServer/domains/lara.dealer/app/Models/MetaUser.php');
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\User;
@@ -13,9 +15,36 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 
 class UsersController extends Controller
 {
+    public function test() {
+        $user = new \App\Models\MetaUser;
+        $user->name = 'Джон';
+        $user->user_id = 16;
+        $user->surname = 'Джон';
+        $user->patronymic = 'Джон';
+        $user->phone = 8909090;
+        $user->email = 'Джон';
+        $user->company_id = 0;
+        $user->updated_by = 11;
+//        $user->created_by = 11;
+        try {
+            $user->save();
+            $result = ($user->id)?"win":"fuck";
+            return response()->json([
+                'success' => true,
+                'result' =>$result
+            ]);
+        } catch(\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'result' => $result
+            ]);
+        }
+//        return response()->json([$result]);
+    }
+
     public function all() {
         // $credentials = request(['token']);
-        // $user = getUser($credentials['token']); 
+        // $user = getUser($credentials['token']);
         $users = User::all();
         $roles = DB::table('roles')->get();
         foreach($users as $user) {
@@ -28,7 +57,7 @@ class UsersController extends Controller
             }
             $user['role'] = $role_name;
         }
-        
+
         return response()->json([
             'success' => true,
             'answer' => $users
@@ -90,6 +119,7 @@ class UsersController extends Controller
     public function update() {
         $user = json_decode(request('user'));
         $user_meta = json_decode(request('user_meta'));
+
         if (Auth::check()) {
             $quser = auth()->user();
             //$quser->getPermissionsViaRoles()
@@ -103,12 +133,12 @@ class UsersController extends Controller
                         if(DB::table('meta_users')->where('user_id', $user->id)->first()) {
                             DB::table('meta_users')->where('user_id', $user->id)->update([
                                 'user_id' => $user->id,
-                                'name' => $user_meta->name,	
-                                'surname' => $user_meta->surname,	
+                                'name' => $user_meta->name,
+                                'surname' => $user_meta->surname,
                                 'patronymic' => $user_meta->patronymic,
-                                'phone' => $user_meta->phone,	
-                                'email' => $user->email,	
-                                'company_id' => $user_meta->company_id,	
+                                'phone' => $user_meta->phone,
+                                'email' => $user->email,
+                                'company_id' => $user_meta->company_id,
                                 'created_by' => $user_meta->created_by,
                                 'updated_by' => $user_meta->updated_by
                             ]);
@@ -119,12 +149,12 @@ class UsersController extends Controller
                         } else {
                             DB::table('meta_users')->insert([
                                 'user_id' => $user->id,
-                                'name' => $user_meta->name,	
-                                'surname' => $user_meta->surname,	
+                                'name' => $user_meta->name,
+                                'surname' => $user_meta->surname,
                                 'patronymic' => $user_meta->patronymic,
-                                'phone' => $user_meta->phone,	
-                                'email' => $user->email,	
-                                'company_id' => $user_meta->company_id,	
+                                'phone' => $user_meta->phone,
+                                'email' => $user->email,
+                                'company_id' => $user_meta->company_id,
                                 'created_by' => $user_meta->created_by,
                                 'updated_by' => $user_meta->updated_by
                             ]);
@@ -163,7 +193,7 @@ class UsersController extends Controller
             DB::table('meta_users')->where('user_id', $user['id'])->delete();
             DB::table('model_has_roles')->where('model_id', $user['id'])->delete();
             DB::table('users')->where('id', $user['id'])->delete();
-    
+
             if(DB::table('users')->where('id', $user['id'])) {
                 return response()->json([
                     'success' => true,
