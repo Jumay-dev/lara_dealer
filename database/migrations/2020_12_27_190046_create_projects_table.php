@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMetaCompaniesTable extends Migration
+class CreateProjectsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,26 +13,26 @@ class CreateMetaCompaniesTable extends Migration
      */
     public function up()
     {
-        Schema::create('meta_companies', function (Blueprint $table) {
+        Schema::create('projects', function (Blueprint $table) {
             $table->bigIncrements('id');
             
-            $table->string('name');
+            $table->string('brand');
             $table->string('ur_name');
             $table->string('inn');
+            $table->string('comment');
+            $table->string('datetime_start');
+            $table->string('datetime_end');
+
             $table->string('region');
             $table->string('city');
             $table->string('street');
             $table->string('house');
-            $table->string('house_block');
+            $table->string('block');
             $table->string('office');
-            $table->string('phone');
-            $table->string('email');
-            $table->string('website');
-            $table->string('director_id');
 
-            $table->string('created_by');
+            $table->integer('created_by');
+            $table->integer('updated_by');
             $table->timestamps();
-            $table->string('updated_by');
         });
     }
 
@@ -43,6 +43,6 @@ class CreateMetaCompaniesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('meta_companies');
+        Schema::dropIfExists('projects');
     }
 }

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-include('C:/OpenServer/domains/lara.dealer/app/Models/MetaUser.php');
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\User;
+use App\Models;
 use Symfony\Component\Security\Core\Security;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -25,7 +24,6 @@ class UsersController extends Controller
         $user->email = 'Джон';
         $user->company_id = 0;
         $user->updated_by = 11;
-//        $user->created_by = 11;
         try {
             $user->saveOrFail();
             $result = ($user->id)?"win":"fuck";
@@ -38,9 +36,7 @@ class UsersController extends Controller
                 'success' => false,
                 'error' => $e
             ]);
-//            return back()->withError($e->getMessage())->withInput();
         }
-//        return response()->json([$result]);
     }
 
     public function all() {

@@ -35,6 +35,26 @@ Route::group([
     Route::post('search', 'UsersController@search');
 });
 
+Route::group([
+    'prefix' => 'company'
+], function() {
+    Route::post('create', 'CompanyController@create');
+    Route::post('get', 'CompanyController@get');
+    Route::post('update', 'CompanyController@update');
+    Route::post('delete', 'CompanyController@delete');
+    Route::post('search', 'CompanyController@search');
+});
+
+Route::group([
+    'prefix' => 'project'
+], function() {
+    Route::post('create', 'ProjectController@create');
+    Route::post('get', 'ProjectController@get');
+    Route::post('update', 'ProjectController@update');
+    Route::post('delete', 'ProjectController@delete');
+    Route::post('search', 'ProjectController@search');
+});
+
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });

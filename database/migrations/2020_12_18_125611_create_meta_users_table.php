@@ -22,7 +22,6 @@ class CreateMetaUsersTable extends Migration
             $table->string('patronymic');
             $table->string('phone');
             $table->string('email');
-
             $table->integer('company_id');
             
             $table->string('created_by');
