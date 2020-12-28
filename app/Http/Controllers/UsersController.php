@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use App\User;
-use App\ExtraUser;
-use App\Models;
-use App\Models\MetaUser;
+
+
 class UsersController extends Controller
 {
     public function test() {
@@ -64,12 +64,13 @@ class UsersController extends Controller
         $email = request('email');
         $password = request('password');
 
-        $user = User::create([
+        $user = new \App\ExtraUser;
+
+        $user->create([
             'name' => $name,
             'email' => $email,
             'password' => Hash::make($password),
         ]);
-        $user->assignRole('employee');
         // $user->save();
 
         return response()->json(['message' => 'Successfully registration!', 'success' => true]);
@@ -78,6 +79,7 @@ class UsersController extends Controller
     public function read() {
         $id = request('id');
         $user = new \App\ExtraUser;
+
         return response()->json([
             'success' => true,
             'answer' => [
