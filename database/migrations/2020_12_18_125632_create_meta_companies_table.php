@@ -19,7 +19,7 @@ class CreateMetaCompaniesTable extends Migration
 
             $table->string('name');
             $table->string('ur_name');
-            $table->string('inn');
+            $table->string('inn')->unique();
             $table->string('region');
             $table->string('city');
             $table->string('street');

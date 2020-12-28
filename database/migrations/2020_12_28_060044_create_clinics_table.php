@@ -19,7 +19,7 @@ class CreateClinicsTable extends Migration
 
             $table->string('brand');
             $table->string('ur_name');
-            $table->string('inn');
+            $table->string('inn')->unique();
 
             $table->string('region');
             $table->string('city');
