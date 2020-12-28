@@ -5,8 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Traits\HasRoles;
 
-
-
 abstract class ExtraModel extends Model
 {
 //    use HasPermissions;

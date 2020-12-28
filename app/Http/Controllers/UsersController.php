@@ -77,11 +77,12 @@ class UsersController extends Controller
 
     public function read() {
         $id = request('id');
+        $user = new \App\ExtraUser;
         return response()->json([
             'success' => true,
             'answer' => [
-                'user' => ExtraUser::find($id),
-                'meta' => User::find($id)->meta
+                'user' => $user->find($id),
+                'meta' => $user->find($id)->meta
             ]
         ]);
     }
