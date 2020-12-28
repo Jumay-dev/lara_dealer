@@ -15,7 +15,8 @@ class CreateMetaCompaniesTable extends Migration
     {
         Schema::create('meta_companies', function (Blueprint $table) {
             $table->bigIncrements('id');
-            
+            $table->integer('external_id');
+
             $table->string('name');
             $table->string('ur_name');
             $table->string('inn');

@@ -15,6 +15,7 @@ class CreateProjectsTable extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('external_id');
 
 //            $table->string('brand');
 //            $table->string('ur_name');
@@ -22,7 +23,7 @@ class CreateProjectsTable extends Migration
             $table->string('comment');
             $table->string('datetime_start');
             $table->string('datetime_end');
-            $table->string('manager_id');
+            $table->integer('manager_id');
             $table->integer('clinic_id');
 
             $table->integer('created_by');

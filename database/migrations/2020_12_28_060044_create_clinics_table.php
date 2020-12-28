@@ -15,6 +15,7 @@ class CreateClinicsTable extends Migration
     {
         Schema::create('clinics', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('external_id');
 
             $table->string('brand');
             $table->string('ur_name');
