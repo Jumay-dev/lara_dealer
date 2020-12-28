@@ -13,24 +13,24 @@ class PermissionsSeeder extends Seeder
     {
         $permissions = [];
 
-        $roles_crud = ['employee', 'dealer', 'manager', 'project'];
-        
+        $roles_crud = ['employee', 'dealer', 'manager', 'project', "user"];
+
         foreach($roles_crud as $role) {
             $permissions[] = [
                 "name" => $role . "_create",
                 "guard_name" => "api"
             ];
-    
+
             $permissions[] = [
                 "name" => $role . "_read",
                 "guard_name" => "api"
             ];
-    
+
             $permissions[] = [
                 "name" => $role . "_edit",
                 "guard_name" => "api"
             ];
-    
+
             $permissions[] = [
                 "name" => $role . "_delete",
                 "guard_name" => "api"

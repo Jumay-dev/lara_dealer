@@ -14,7 +14,7 @@ class ExtraUser extends User
 
     public static function setObject()
     {
-        return "project";
+        return "user";
     }
 
     public static function getObject()
