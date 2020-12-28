@@ -22,12 +22,21 @@ abstract class ExtraModel extends Model
 
     public function saveOrFail(array $options = [])
     {
-
         $user = auth()->user();
-
         if ($user) {
             if ($user->hasPermissionTo(static::getObject().'_create')) {
                 return parent::saveOrFail($options);
+            }
+            throw new \Exception('Недостаточно прав');
+        }
+        throw new \Exception('Время действия вашей сессии истекло');
+    }
+
+    public static function destroy($ids) {
+        $user = auth()->user();
+        if ($user) {
+            if ($user->hasPermissionTo(static::getObject().'_delete')) {
+                return parent::destroy($ids);
             }
             throw new \Exception('Недостаточно прав');
         }

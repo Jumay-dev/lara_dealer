@@ -65,4 +65,8 @@ class User extends Authenticatable implements JWTSubject
     public function meta() {
         return $this->hasOne('App\Models\MetaUser', 'user_id');
     }
+
+    public function projects() {
+        return $this->hasMany('App\Models\Project', 'manager_id', 'id');
+    }
 }

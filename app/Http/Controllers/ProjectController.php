@@ -61,7 +61,7 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function edit() {
+    public function update() {
         $id = request('id');
 
         if(isset($id) && $id !== '') {
@@ -75,7 +75,7 @@ class ProjectController extends Controller
                 $proj_res->manager_id = request('manager_id');
                 $proj_res->clinic_id = request('clinic_id');
 
-                $proj_res->save();
+                $proj_res->saveOrFail();
                 return response()->json([
                     'success' => true,
                     'result' => "Измененя сохранены"
