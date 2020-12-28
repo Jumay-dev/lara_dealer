@@ -47,7 +47,8 @@ class ProjectController extends Controller
             if ($proj_res) {
                 return response()->json([
                    'success' => true,
-                   'result' => $proj_res
+                   'result' => $proj_res,
+                    'clinic' => $proj_res->clinic
                 ]);
             }
             return response()->json([
