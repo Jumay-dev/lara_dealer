@@ -23,13 +23,6 @@ class CreateProjectsTable extends Migration
             $table->string('datetime_start');
             $table->string('datetime_end');
 
-            $table->string('region');
-            $table->string('city');
-            $table->string('street');
-            $table->string('house');
-            $table->string('block');
-            $table->string('office');
-
             $table->integer('created_by');
             $table->integer('updated_by');
             $table->timestamps();
