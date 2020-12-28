@@ -55,6 +55,16 @@ Route::group([
     Route::post('search', 'ProjectController@search');
 });
 
+Route::group([
+    'prefix' => 'clinic'
+], function() {
+    Route::post('create', 'ClinicalController@create');
+    Route::post('get', 'ClinicalController@get');
+    Route::post('update', 'ClinicalController@update');
+    Route::post('delete', 'ClinicalController@delete');
+    Route::post('search', 'ClinicalController@search');
+});
+
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
