@@ -4,14 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
 use App\User;
+use App\ExtraUser;
 use App\Models;
-use Symfony\Component\Security\Core\Security;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
-
+use App\Models\MetaUser;
 class UsersController extends Controller
 {
     public function test() {
@@ -79,38 +76,14 @@ class UsersController extends Controller
     }
 
     public function read() {
-        $id = request(['id']);
-        if (Auth::check()) {
-            if (isset($id)) {
-                $user = DB::table('users')->where('id', $id)->first();
-                if ($user !== null) {
-                    $user_meta = DB::table('meta_users')->where('id', $id)->first();
-                    return response()->json([
-                        'success' => true,
-                        'answer' => [
-                            'user' => $user,
-                            'user_meta' => $user_meta
-                        ]
-                    ]);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'answer' => 'user not found'
-                    ]);
-                }
-            }
-            return response()->json([
-                'success' => false,
-                'answer' => 'id is not setted'
-            ]);
-        }
-        else {
-            return response()->json([
-                'success' => false,
-                'answer' => 'user is not logged in'
-            ]);
-        }
-
+        $id = request('id');
+        return response()->json([
+            'success' => true,
+            'answer' => [
+                'user' => ExtraUser::find($id),
+                'meta' => User::find($id)->meta
+            ]
+        ]);
     }
 
     public function update() {

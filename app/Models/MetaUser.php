@@ -6,10 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 class MetaUser extends ExtraModel
 {
     protected $table = 'meta_users';
-     public function user() {
-         return $this->belongsTo('App\User', 'foreign_key', "id");
-     }
-
+    
     public static function setObject(){
         return "project";
     }

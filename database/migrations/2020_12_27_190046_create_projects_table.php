@@ -22,6 +22,7 @@ class CreateProjectsTable extends Migration
             $table->string('comment');
             $table->string('datetime_start');
             $table->string('datetime_end');
+            $table->integer('clinic_id');
 
             $table->integer('created_by');
             $table->integer('updated_by');
