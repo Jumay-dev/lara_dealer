@@ -13,7 +13,15 @@ class PermissionsSeeder extends Seeder
     {
         $permissions = [];
 
-        $roles_crud = ['employee', 'dealer', 'manager', 'project', "user"];
+        $roles_crud = [
+            'employee',
+            'dealer',
+            'manager',
+            'project',
+            "user",
+            'meta_company',
+            'clinic'
+        ];
 
         foreach($roles_crud as $role) {
             $permissions[] = [

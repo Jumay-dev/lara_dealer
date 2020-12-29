@@ -73,7 +73,7 @@ class UsersController extends Controller
         ]);
         // $user->save();
 
-        return response()->json(['message' => 'Successfully registration!', 'success' => true]);
+        return response()->json(['message' => 'Пользователь успешно зарегистрирован', 'success' => true]);
     }
 
     public function read() {
@@ -90,74 +90,46 @@ class UsersController extends Controller
     }
 
     public function update() {
-        $user = json_decode(request('user'));
+        $user = new \App\ExtraUser;
+
+        $id = request('id');
+        $changes_user = json_decode(request('user'));
         $user_meta = json_decode(request('user_meta'));
 
-        if (Auth::check()) {
-            $quser = auth()->user();
-            //$quser->getPermissionsViaRoles()
-            if ($quser->hasPermissionTo('project_create')) {
-                if($user) {
-                    DB::table('users')->where('id', $user->id)->update([
-                        'name' => $user->name,
-                        'email' => $user->email,
-                    ]);
-                    if ($user_meta) {
-                        if(DB::table('meta_users')->where('user_id', $user->id)->first()) {
-                            DB::table('meta_users')->where('user_id', $user->id)->update([
-                                'user_id' => $user->id,
-                                'name' => $user_meta->name,
-                                'surname' => $user_meta->surname,
-                                'patronymic' => $user_meta->patronymic,
-                                'phone' => $user_meta->phone,
-                                'email' => $user->email,
-                                'company_id' => $user_meta->company_id,
-                                'created_by' => $user_meta->created_by,
-                                'updated_by' => $user_meta->updated_by
-                            ]);
-                            return response()->json([
-                                'success' => true,
-                                'message' => 'user and meta updated',
-                            ]);
-                        } else {
-                            DB::table('meta_users')->insert([
-                                'user_id' => $user->id,
-                                'name' => $user_meta->name,
-                                'surname' => $user_meta->surname,
-                                'patronymic' => $user_meta->patronymic,
-                                'phone' => $user_meta->phone,
-                                'email' => $user->email,
-                                'company_id' => $user_meta->company_id,
-                                'created_by' => $user_meta->created_by,
-                                'updated_by' => $user_meta->updated_by
-                            ]);
-                            return response()->json([
-                                'success' => true,
-                                'message' => 'user updated and meta created'
-                            ]);
-                        }
-                    }
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'user updated'
-                    ]);
+        if (!isset($id)) $id = auth()->user()['id'];
+
+        $founded_user = $user->find($id);
+
+        if ($founded_user) {
+            if (isset($changes_user) && $changes_user !== []) {
+                foreach($changes_user as $key => $value) {
+                    $founded_user->$key = $value;
                 }
+            }
+
+            if (isset($user_meta) && $user_meta !== []) {
+                foreach($user_meta as $key => $value) {
+                    $founded_user->$key = $value;
+                }
+            }
+
+            if ($founded_user->saveOrFail()) {
+                return response()->json([
+                    'success' => true,
+                    'result' => 'Изменения успешно сохранены'
+                ]);
+            } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'user not setted'
+                    'result' => 'Ошибка сохранения изменений'
                 ]);
             }
-            return response()->json([
-                'success' => false,
-                'message' => 'access denied by permission policy'
-            ]);
         } else {
             return response()->json([
                 'success' => false,
-                'answer' => 'user is not logged in'
+                'result' => 'Пользователь не найден'
             ]);
         }
-
     }
 
     public function delete() {
