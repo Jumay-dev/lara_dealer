@@ -91,6 +91,7 @@ class UsersController extends Controller
 
     public function update() {
         $user = new \App\ExtraUser;
+        $meta = new \App\Models\MetaUser;
 
         $id = request('id');
         $changes_user = json_decode(request('user'));
@@ -98,25 +99,29 @@ class UsersController extends Controller
 
         if (!isset($id)) $id = auth()->user()['id'];
 
-        $founded_user = $user->find($id);
+        $found_user = $user->find($id);
+        $found_meta = $found_user->meta;
 
-        if ($founded_user) {
+        if ($found_user) {
             if (isset($changes_user) && $changes_user !== []) {
                 foreach($changes_user as $key => $value) {
-                    $founded_user->$key = $value;
+                    $found_user->$key = $value;
                 }
             }
 
             if (isset($user_meta) && $user_meta !== []) {
+                if (!$found_meta) $found_meta = $meta;
+                if (!isset($user_meta -> user_id)) $user_meta->user_id = $id;
                 foreach($user_meta as $key => $value) {
-                    $founded_user->$key = $value;
+                    $found_meta->$key = $value;
                 }
             }
 
-            if ($founded_user->saveOrFail()) {
+            if ($found_user->saveOrFail() && $found_meta->saveOrFail()) {
                 return response()->json([
                     'success' => true,
-                    'result' => 'Изменения успешно сохранены'
+                    'result' => 'Изменения успешно сохранены',
+                    'meta' => $found_meta
                 ]);
             } else {
                 return response()->json([

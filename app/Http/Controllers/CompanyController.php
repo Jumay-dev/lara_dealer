@@ -78,6 +78,7 @@ class CompanyController extends Controller
             $company_res = $company->find($id);
 
             if ($company_res) {
+
                 $company_res->external_id = request('external_id');
                 $company_res->brand = request('name');
                 $company_res->ur_name = request('ur_name');
