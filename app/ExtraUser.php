@@ -43,4 +43,11 @@ class ExtraUser extends User
         }
         throw new \Exception('Время действия вашей сессии истекло');
     }
+
+    public static function all($columns = ['*']) {
+        $current_user = auth()->user();
+        if ($current_user) {
+            return parent::all($columns = ['*']);
+        }
+    }
 }

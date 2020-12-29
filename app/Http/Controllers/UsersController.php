@@ -39,18 +39,13 @@ class UsersController extends Controller
     public function all() {
         // $credentials = request(['token']);
         // $user = getUser($credentials['token']);
-        $users = User::all();
-        $roles = DB::table('roles')->get();
-        foreach($users as $user) {
-            $user_role_obj = DB::table('model_has_roles')->where('model_id', $user['id'])->first();
-            $role_name = null;
-            foreach($roles as $role) {
-                if($role->id === $user_role_obj->role_id) {
-                    $role_name = $role->name;
-                }
-            }
-            $user['role'] = $role_name;
-        }
+        $user = new \App\ExtraUser;
+        $users = $user->all();
+//
+//        foreach($users as $user) {
+//            $user['roles'] = $user->getRoleNames();
+//            $user['permissions'] = $user->getAllPermissions();
+//        }
 
         return response()->json([
             'success' => true,
