@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -46,10 +48,12 @@ class UsersController extends Controller
 //            $user['roles'] = $user->getRoleNames();
 //            $user['permissions'] = $user->getAllPermissions();
 //        }
+//        $qu = Http::get('https://jsonplaceholder.typicode.com/posts')->json();
 
         return response()->json([
             'success' => true,
-            'answer' => $users
+            'answer' => $users,
+//            'q' => $qu
         ]);
         // return $user;
     }
