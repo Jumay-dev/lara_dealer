@@ -53,7 +53,6 @@ class UsersController extends Controller
         return response()->json([
             'success' => true,
             'answer' => $users,
-//            'q' => $qu
         ]);
         // return $user;
     }
