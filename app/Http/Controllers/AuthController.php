@@ -36,7 +36,7 @@ class AuthController extends Controller
         $user['role'] = auth()->user()->getRoleNames();
 
         return response()->json([
-            'token' => $this->respondWithToken($token), 
+            'token' => $this->respondWithToken($token),
             'user' => $user,
             'success' => true,
         ]);
@@ -47,17 +47,17 @@ class AuthController extends Controller
      */
     public function registration()
     {
-        $name = request('name');
+        $login = request('login');
         $email = request('email');
         $password = request('password');
 
         $user = User::create([
-            'name' => $name,
+            'login' => $login,
             'email' => $email,
             'password' => Hash::make($password),
         ]);
         $user->assignRole('employee');
-        // $user->save();
+//         $user->save();
 
         return response()->json(['message' => 'Successfully registration!', 'success' => true]);
     }
