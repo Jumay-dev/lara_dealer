@@ -24,6 +24,8 @@ class CreateUsersTable extends Migration
             $table->string('patronymic');
             $table->string('phone');
             $table->integer('company_id');
+            $table->string('max_discount');
+            $table->string('project_visibility');
 
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

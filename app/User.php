@@ -14,7 +14,7 @@ class User extends Authenticatable implements JWTSubject
     use HasRoles;
 
     protected $fillable = [
-        'name', 'email', 'password',
+        'login', 'email', 'password',
     ];
 
     protected $guard_name = 'api';
@@ -24,7 +24,9 @@ class User extends Authenticatable implements JWTSubject
         'surname' => '',
         'patronymic' => '',
         'phone' => '',
-        'company_id' => 0
+        'company_id' => 0,
+        'max_discount' => '0',
+        'project_visibility' => '0'
     ];
 
     protected $hidden = [
