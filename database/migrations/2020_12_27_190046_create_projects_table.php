@@ -17,14 +17,14 @@ class CreateProjectsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('external_id');
 
-//            $table->string('brand');
-//            $table->string('ur_name');
-//            $table->string('inn');
-            $table->string('comment');
-            $table->string('datetime_start');
-            $table->string('datetime_end');
-            $table->integer('manager_id');
-            $table->integer('clinic_id');
+            $table->string('dealer');
+            $table->string('employee');
+            $table->string('client');
+            $table->string('manager_id');
+
+            $table->string('added_at');
+            $table->string('actualised_at');
+            $table->string('expires_at');
 
             $table->integer('created_by');
             $table->integer('updated_by');

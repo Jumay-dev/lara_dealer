@@ -4,7 +4,7 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
+//use Illuminate\Foundation\Auth;
 use Illuminate\Support\Facades\Request;
 
 class AuthController extends Controller
@@ -69,20 +69,14 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function me()
-    {   if(Auth::check()) {
-        $user = auth()->user();
-        $user['role'] = auth()->user()->getRoleNames();
+    {
+            $user = auth()->user();
+            $user['role'] = auth()->user()->getRoleNames();
 
-        return response()->json([
-            'user' => $user,
-            'success' => true,
-        ]);
-        } else {
             return response()->json([
-                'message' => 'user is not logged in',
-                'success' => false,
+                'user' => $user,
+                'success' => true,
             ]);
-        }
     }
 
     /**
@@ -110,7 +104,7 @@ class AuthController extends Controller
     /**
      * Get the token array structure.
      *
-     * @param  string $token
+     * @param string $token
      *
      * @return \Illuminate\Http\JsonResponse
      */
