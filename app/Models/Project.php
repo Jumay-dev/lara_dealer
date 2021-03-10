@@ -23,7 +23,7 @@ class Project extends ExtraModel
         return parent::saveOrFail($options);
     }
 
-    public function clinic() {
-        return $this->hasOne('App\Models\Clinic', 'id', 'clinic_id' );
-    }
+//    public function clinic() {
+//        return $this->hasOne('App\Models\Clinic', 'id', 'clinic_id' );
+//    }
 }

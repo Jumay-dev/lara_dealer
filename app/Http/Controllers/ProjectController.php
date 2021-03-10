@@ -10,12 +10,16 @@ class ProjectController extends Controller
 
     public function create() {
         $project = new \App\Models\Project;
-        $project->comment = request('comment');;
-        $project->datetime_start = request('datetime_start');;
-        $project->datetime_end = request('datetime_end');;
-        $project->manager_id = request('manager_id');;
-        $project->clinic_id = request('clinic_id');;
-        $project->external_id = request('external_id');;
+
+        $project->external_id = 0;
+        $project->dealer = request('dealer');
+        $project->employee = request('employee');
+        $project->client = request('client');
+        $project->manager_id = request('manager_id');
+        $project->added_at = request('added_at');
+        $project->actualised_at = request('actualised_at');
+        $project->expires_at = request('expires_at');
+
         try {
             $project->saveOrFail();
             if ($project->id) {
