@@ -9,7 +9,7 @@ class ProjectTools extends ExtraModel
 {
     use HasFactory;
 
-    protected $table = 'projects_tools';
+    protected $table = 'project_tools';
 
     public static function setObject(){
         return "project_tools";

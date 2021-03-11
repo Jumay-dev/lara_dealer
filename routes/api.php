@@ -53,7 +53,9 @@ Route::group([
 Route::group([
     'prefix' => 'project'
 ], function() {
+    Route::post('/tools', [ProjectController::class, 'tools']);
     Route::post('/create', [ProjectController::class, 'create']);
+    Route::post('/list', [ProjectController::class, 'list']);
     Route::post('/get', [ProjectController::class, 'get']);
     Route::post('/update', [ProjectController::class, 'update']);
     Route::post('/delete', [ProjectController::class, 'delete']);

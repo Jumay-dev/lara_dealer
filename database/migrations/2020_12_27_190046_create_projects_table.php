@@ -22,7 +22,6 @@ class CreateProjectsTable extends Migration
             $table->string('client');
             $table->string('manager_id');
 
-            $table->string('added_at');
             $table->string('actualised_at');
             $table->string('expires_at');
 

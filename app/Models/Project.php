@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ProjectTools;
 
 class Project extends ExtraModel
 {
@@ -25,6 +26,6 @@ class Project extends ExtraModel
 
     public function projectTools()
     {
-        return $this->hasMany('\App\Models\ProjectTools', 'id', 'project_id');
+        return $this->hasMany('App\Models\ProjectTools', 'project_id', 'id');
     }
 }
