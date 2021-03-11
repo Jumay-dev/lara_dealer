@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateToolsTable extends Migration
+class CreateProjectToolsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,11 @@ class CreateToolsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tools', function (Blueprint $table) {
+        Schema::create('project_tools', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('external_id');
-            $table->string('tool_name');
-            $table->string('category_id');
-            $table->string('tool_provider');
-            $table->string('tool_sort');
-            $table->string('visibility');
+            $table->string('project_id');
+            $table->string('tool_id');
+            $table->string('status_id');
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ class CreateToolsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tools');
+        Schema::dropIfExists('project_tools');
     }
 }

@@ -3,10 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Project;
 
 class ProjectController extends Controller
 {
     protected $table = 'projects';
+
+    public function list() {
+        $limit = request('limit');
+
+        $project = new \App\Models\Project;
+
+        return response()->json($project->all());
+
+    }
 
     public function create() {
         $project = new \App\Models\Project;

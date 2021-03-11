@@ -39,9 +39,7 @@ class UsersController extends Controller
     }
 
     public function all() {
-        // $credentials = request(['token']);
-        // $user = getUser($credentials['token']);
-        $user = new \App\ExtraUser;
+        $user = new \App\User;
         $users = $user->all();
 //
 //        foreach($users as $user) {
@@ -54,7 +52,6 @@ class UsersController extends Controller
             'success' => true,
             'answer' => $users,
         ]);
-        // return $user;
     }
 
     public function create() {

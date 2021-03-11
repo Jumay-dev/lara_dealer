@@ -5,14 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tools extends Model
+class Categories extends Model
 {
     use HasFactory;
 
-    protected $table = 'tools';
+    protected $table = 'categories';
 
     public static function setObject()
     {
-        return 'tools';
+        return "categories";
+    }
+
+    public function tools()
+    {
+        return $this->hasMany(Tools::class);
     }
 }

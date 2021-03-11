@@ -4,8 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UsersController;
-use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\ClinicalController;
+use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ProjectController;
 
 /*
@@ -41,13 +40,14 @@ Route::group([
 });
 
 Route::group([
-    'prefix' => 'company'
+    'prefix' => 'cat'
 ], function() {
-    Route::post('/create', [CompanyController::class, 'create']);
-    Route::post('/get', [CompanyController::class, 'get']);
-    Route::post('/update', [CompanyController::class, 'update']);
-    Route::post('/delete', [CompanyController::class, 'delete']);
-    Route::post('/search', [CompanyController::class, 'search']);
+    Route::post('/index', [CategoriesController::class, 'index']);
+    Route::post('/create', [CategoriesController::class, 'create']);
+    Route::post('/get', [CategoriesController::class, 'get']);
+    Route::post('/update', [CategoriesController::class, 'update']);
+    Route::post('/delete', [CategoriesController::class, 'delete']);
+    Route::post('/search', [CategoriesController::class, 'search']);
 });
 
 Route::group([
@@ -58,14 +58,4 @@ Route::group([
     Route::post('/update', [ProjectController::class, 'update']);
     Route::post('/delete', [ProjectController::class, 'delete']);
     Route::post('/search', [ProjectController::class, 'search']);
-});
-
-Route::group([
-    'prefix' => 'clinic'
-], function() {
-    Route::post('/create', [ClinicalController::class, 'create']);
-    Route::post('/get', [ClinicalController::class, 'get']);
-    Route::post('/update', [ClinicalController::class, 'update']);
-    Route::post('/delete', [ClinicalController::class, 'delete']);
-    Route::post('/search', [ClinicalController::class, 'search']);
 });

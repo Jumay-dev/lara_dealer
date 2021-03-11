@@ -1,5 +1,5 @@
 <?php
-
+namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 
 class RoleHasPermissionsSeeder extends Seeder
@@ -12,11 +12,11 @@ class RoleHasPermissionsSeeder extends Seeder
      */
 
     public function permisson_inject($role_name, Array $permissions = []) {
-        $cur_role = DB::table('roles')->where('name', $role_name)->first();
+        $cur_role = \DB::table('roles')->where('name', $role_name)->first();
 
         $role_has_permissons = [];
         foreach($permissions as $permission) {
-            $permission_db = DB::table('permissions')->where('name', $permission)->first();
+            $permission_db = \DB::table('permissions')->where('name', $permission)->first();
             if ($permission_db) {
                 $role_has_permissons[] = [
                     "permission_id" => $permission_db->id,
