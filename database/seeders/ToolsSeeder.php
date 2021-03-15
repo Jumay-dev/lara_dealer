@@ -37,6 +37,38 @@ class ToolsSeeder extends Seeder
             'tool_sort' => '0',
             'visibility' => '1'
         ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'ЛОР-комбайн Medstar UE-3000 базовая версия',
+            'category_id' => '12',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'ЛОР-комбайн New Millennium Grand',
+            'category_id' => '12',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'ЛОР-комбайн Medstar UE-3000 стандартная версия',
+            'category_id' => '12',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'ЛОР-комбайн Medstar UE-3000 расширенная версия',
+            'category_id' => '12',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
         \DB::table('tools')->insert($tools);
     }
 }

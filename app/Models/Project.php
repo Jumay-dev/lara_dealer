@@ -9,7 +9,8 @@ class Project extends ExtraModel
 {
     protected $table = 'projects';
 
-    public static function setObject(){
+    public static function setObject()
+    {
         return "project";
     }
 
@@ -27,5 +28,10 @@ class Project extends ExtraModel
     public function projectTools()
     {
         return $this->hasMany('App\Models\ProjectTools', 'project_id', 'id');
+    }
+
+    public function projectClinics()
+    {
+        return $this->hasMany('App\Models\Clinic', 'project_id', 'id');
     }
 }

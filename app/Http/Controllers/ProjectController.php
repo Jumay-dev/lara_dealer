@@ -90,7 +90,7 @@ class ProjectController extends Controller
                     [
                         'success' => true,
                         'result' => $proj_res,
-                        'clinic' => $proj_res->clinic
+                        'clinic' => $proj_res->projectClinics
                     ]
                 );
             }
