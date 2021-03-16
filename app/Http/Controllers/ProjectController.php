@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Clinic;
 use App\Models\Project;
 use App\Models\ProjectTools;
+use App\ExtraUser;
 
 class ProjectController extends Controller
 {
@@ -12,10 +14,17 @@ class ProjectController extends Controller
     public function list()
     {
         $project = new Project;
+        $user = new ExtraUser;
+        $projects = $project->all();
+
+        foreach($projects as $proj) {
+            $proj['responsible'] = $user->find($proj['employee']);
+            $proj['clinics'] = $proj->projectClinics;
+        }
 
         return response()->json(
             [
-                "projects" => $project->all(),
+                "projects" => $projects,
                 "success" => true
             ]
         );
@@ -43,6 +52,31 @@ class ProjectController extends Controller
 
         try {
             $project->saveOrFail();
+
+            $clinicInfo = json_decode(request('clinic'));
+
+            $clinic = new Clinic;
+            $clinic->external_id = 0;
+            $clinic->project_id = $project->id;
+            $clinic->name = $clinicInfo->clinicName;
+            $clinic->urname = $clinicInfo->clinicUr;
+            $clinic->address = $clinicInfo->clinicAddress;
+            $clinic->inn = $clinicInfo->clinicInn;
+            $clinic->is_subdealer = 0;
+            $clinic->save();
+
+            if ($subdealerInfo = request('subdealer')) {
+                $subdealer = new Clinic;
+                $clinic->external_id = 0;
+                $clinic->project_id = $project->id;
+                $clinic->name = $clinicInfo['dealerName'];
+                $clinic->urname = $clinicInfo['dealerUr'];
+                $clinic->address = $clinicInfo['dealerAddress'];
+                $clinic->inn = $clinicInfo['dealerInn'];
+                $clinic->is_subdealer = 1;
+                $clinic->save();
+            }
+
             if ($projectId = $project->id) {
                 $tools_array = explode(',', \request('tools'));
                 foreach ($tools_array as $projTool) {
@@ -57,7 +91,7 @@ class ProjectController extends Controller
                     [
                         'success' => true,
                         'result' => "Проект создан",
-                        'test' => $tools_array
+                        'test' => json_decode(request('clinic'))
                     ]
                 );
             } else {

@@ -69,6 +69,111 @@ class ToolsSeeder extends Seeder
             'tool_sort' => '0',
             'visibility' => '1'
         ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Монитор пациента VP-1000 (VOTEM, Ю. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Монитор пациента VP-1200 (VOTEM, Ю. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Монитор пациента VP-700 (VOTEM, Ю. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Электрохирургический аппарат DS.Surg 200S (ZERONE, Ю. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Электрохирургический аппарат DS.Surg 400 (ZERONE, Ю. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Электрохирургический аппарат DS.Surg Plus (ZERONE, Ю. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Приставка аргоноплазменная DS.Surg Argon (ZERONE, Ю. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Электрохирургический аппарат DS.Surg 300 (ZERONE, Ю. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Электрохирургический аппарат DS.Surg Plus PRO (ZERONE, Ю. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Радиоволновой аппарат DS.Surg 100 (ZERONE, Юж. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Электрохирургический аппарат DS.Surg ENT (ZERONE, Ю. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Радиоволновой аппарат DS.Surg 50 (ZERONE, Ю. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+        $tools[] = [
+            'external_id' => '0',
+            'tool_name' => 'Радиоволновой аппарат DS.Surg 80 (ZERONE, Ю. Корея)',
+            'category_id' => '10',
+            'tool_provider' => '0',
+            'tool_sort' => '0',
+            'visibility' => '1'
+        ];
+
         \DB::table('tools')->insert($tools);
     }
 }

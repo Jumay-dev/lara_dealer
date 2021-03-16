@@ -79,7 +79,6 @@ class UsersController extends Controller
             'success' => true,
             'answer' => [
                 'user' => $user->find($id),
-                'meta' => $user->find($id)->meta
             ]
         ]);
     }

@@ -9,10 +9,10 @@ class Clinic extends ExtraModel
 {
     use HasFactory;
 
-    protected $table = 'categories';
+    protected $table = 'clinics';
 
     public static function setObject()
     {
-        return "categories";
+        return "clinics";
     }
 }

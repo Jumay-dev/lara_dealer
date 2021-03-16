@@ -32,9 +32,9 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized', 'success' => false], 401);
         }
 
-        // $token = auth()->attempt($credentials);
         $user = auth()->user();
-        $user['role'] = auth()->user()->getRoleNames();
+        $user['id'] = auth()->id();
+        $user['roles'] = auth()->user()->getRoleNames();
 
         return response()->json([
             'token' => $this->respondWithToken($token),
@@ -71,7 +71,8 @@ class AuthController extends Controller
     public function me()
     {
             $user = auth()->user();
-            $user['role'] = auth()->user()->getRoleNames();
+            $user['roles'] = auth()->user()->getRoleNames();
+            $user['id'] = auth()->id();
 
             return response()->json([
                 'user' => $user,
