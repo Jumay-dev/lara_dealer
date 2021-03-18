@@ -9,9 +9,9 @@ class Company extends ExtraModel
 {
     protected $table = "companies";
 
-    public function companyDetals(): HasMany
+    public function companyDetails(): HasMany
     {
-        return $this->hasMany('App\Models\Clinic', 'company_id', 'id');
+        return $this->hasMany('App\Models\BankDetails', 'company_id', 'id');
     }
 
     public function companyDirector(): HasOne

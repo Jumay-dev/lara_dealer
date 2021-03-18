@@ -72,14 +72,14 @@ class ProjectController extends Controller
 
             if ($subdealerInfo = request('subdealer')) {
                 $subdealer = new Clinic;
-                $clinic->external_id = 0;
-                $clinic->project_id = $project->id;
-                $clinic->name = $clinicInfo['dealerName'];
-                $clinic->urname = $clinicInfo['dealerUr'];
-                $clinic->address = $clinicInfo['dealerAddress'];
-                $clinic->inn = $clinicInfo['dealerInn'];
-                $clinic->is_subdealer = 1;
-                $clinic->save();
+                $subdealer->external_id = 0;
+                $subdealer->project_id = $project->id;
+                $subdealer->name = $subdealerInfo->dealerName;
+                $subdealer->urname = $subdealerInfo->dealerUr;
+                $subdealer->address = $subdealerInfo->dealerAddress;
+                $subdealer->inn = $subdealerInfo->dealerInn;
+                $subdealer->is_subdealer = 1;
+                $subdealer->save();
             }
 
             if ($projectId = $project->id) {

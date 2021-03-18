@@ -82,5 +82,6 @@ Route::group(
     function () {
         Route::post('/updatemain', [CompanyController::class, 'updateMain']);
         Route::post('/details', [BankDetailsController::class, 'getDetails']);
+        Route::post('/newdetail', [BankDetailsController::class, 'create']);
     }
 );
