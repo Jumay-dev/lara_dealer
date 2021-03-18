@@ -50,6 +50,7 @@ class ProjectController extends Controller
         $project->manager_id = request('manager_id');
         $project->actualised_at = request('actualised_at');
         $project->expires_at = request('expires_at');
+        $project->status = "4";
 
         try {
             $project->saveOrFail();

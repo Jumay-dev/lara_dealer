@@ -24,6 +24,7 @@ class CreateProjectsTable extends Migration
 
             $table->string('actualised_at');
             $table->string('expires_at');
+            $table->string('status');
 
             $table->integer('created_by');
             $table->integer('updated_by');
