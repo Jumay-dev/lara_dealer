@@ -20,6 +20,7 @@ class ProjectController extends Controller
         foreach($projects as $proj) {
             $proj['responsible'] = $user->find($proj['employee']);
             $proj['clinics'] = $proj->projectClinics;
+            $proj['dealer'] = $proj->projectDealer;
         }
 
         return response()->json(
@@ -64,6 +65,9 @@ class ProjectController extends Controller
             $clinic->inn = $clinicInfo->clinicInn;
             $clinic->is_subdealer = 0;
             $clinic->save();
+
+            $project->client = $clinic->id;
+            $project->saveOrFail();
 
             if ($subdealerInfo = request('subdealer')) {
                 $subdealer = new Clinic;

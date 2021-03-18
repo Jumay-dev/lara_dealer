@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\CompanyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,4 +61,10 @@ Route::group([
     Route::post('/update', [ProjectController::class, 'update']);
     Route::post('/delete', [ProjectController::class, 'delete']);
     Route::post('/search', [ProjectController::class, 'search']);
+});
+
+Route::group([
+                 'prefix' => 'company'
+             ], function() {
+    Route::post('/updatemain', [CompanyController::class, 'updateMain']);
 });

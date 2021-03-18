@@ -50,4 +50,9 @@ class User extends Authenticatable implements JWTSubject
     public function projects() {
         return $this->hasMany('App\Models\Project', 'manager_id', 'id');
     }
+
+    public function company() {
+        $company = $this->hasOne('App\Models\Company', 'id', 'company_id');
+        return $company;
+    }
 }

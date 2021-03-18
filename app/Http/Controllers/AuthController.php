@@ -35,6 +35,9 @@ class AuthController extends Controller
         $user = auth()->user();
         $user['id'] = auth()->id();
         $user['roles'] = auth()->user()->getRoleNames();
+        $company = $user->company;
+        $company['director'] = $user->find($company->director_id);
+        $user['company'] = $company;
 
         return response()->json([
             'token' => $this->respondWithToken($token),
@@ -73,6 +76,10 @@ class AuthController extends Controller
             $user = auth()->user();
             $user['roles'] = auth()->user()->getRoleNames();
             $user['id'] = auth()->id();
+
+            $company = $user->company;
+            $company['director'] = $user->find($company->director_id);
+            $user['company'] = $company;
 
             return response()->json([
                 'user' => $user,

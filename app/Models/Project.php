@@ -34,4 +34,8 @@ class Project extends ExtraModel
     {
         return $this->hasMany('App\Models\Clinic', 'project_id', 'id');
     }
+
+    public function projectDealer() {
+        return $this->hasOne('App\Models\Company', 'id', 'dealer');
+    }
 }
