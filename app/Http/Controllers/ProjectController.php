@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Clinic;
 use App\Models\Project;
 use App\Models\ProjectTools;
+use App\Mail\TestMail;
+use App\Mail\ProjectAddedMail;
 use App\ExtraUser;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ProjectController extends Controller
 {
@@ -53,8 +56,8 @@ class ProjectController extends Controller
         $project->actualised_at = request('actualised_at');
         $project->expires_at = request('expires_at');
         $project->status = "4";
+        $user = new ExtraUser;
 
-        try {
             $project->saveOrFail();
 
             $clinicInfo = json_decode(request('clinic'));
@@ -94,6 +97,15 @@ class ProjectController extends Controller
                     $tool->save();
                 }
 
+                $infoToMail = [
+                    'project' => $project,
+                    'tools' => $tools_array,
+                    'clinic' => $clinic,
+                    'user' => $user->find(request('employee'))
+                ];
+
+                Mail::to('osipovm33rus@gmail.com')->queue(new ProjectAddedMail($infoToMail));
+
                 return response()->json(
                     [
                         'success' => true,
@@ -109,14 +121,6 @@ class ProjectController extends Controller
                     ]
                 );
             }
-        } catch (\Exception $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'error' => $e
-                ]
-            );
-        }
     }
 
     public function get()
