@@ -6,6 +6,7 @@ use App\Models\Clinic;
 use App\Models\Project;
 use App\Models\ProjectTools;
 use App\ExtraUser;
+use Illuminate\Pagination\Paginator;
 
 class ProjectController extends Controller
 {
@@ -13,9 +14,10 @@ class ProjectController extends Controller
 
     public function list()
     {
+        $perPage = request('limit');
         $project = new Project;
         $user = new ExtraUser;
-        $projects = $project->all();
+        $projects = $project->paginate($perPage);
 
         foreach($projects as $proj) {
             $proj['responsible'] = $user->find($proj['employee']);
@@ -25,8 +27,8 @@ class ProjectController extends Controller
 
         return response()->json(
             [
-                "projects" => $projects,
-                "success" => true
+                "success" => true,
+                "projects" => $projects
             ]
         );
     }
