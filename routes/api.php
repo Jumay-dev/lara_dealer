@@ -6,6 +6,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\BankDetailsController;
+use App\Http\Controllers\SyncController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -83,5 +84,14 @@ Route::group(
         Route::post('/updatemain', [CompanyController::class, 'updateMain']);
         Route::post('/details', [BankDetailsController::class, 'getDetails']);
         Route::post('/newdetail', [BankDetailsController::class, 'create']);
+    }
+);
+
+Route::group(
+    [
+        'prefix' => 'sync'
+    ],
+    function() {
+        Route::get('/bitrix', [SyncController::class, 'syncWithBX']);
     }
 );
