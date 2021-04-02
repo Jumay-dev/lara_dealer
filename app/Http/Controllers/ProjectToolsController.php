@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProjectTools;
+use App\Models\Comments;
 use Illuminate\Http\Request;
 
 class ProjectToolsController extends Controller
@@ -87,7 +88,7 @@ class ProjectToolsController extends Controller
     {
         $arToolsToUpdate = json_decode(request('tools'));
         $status = request('status');
-        $comment = request('comment');
+        $reqComment = request('comment');
         try {
             if ($status !== '') {
                 if (count($arToolsToUpdate) !== 0) {
@@ -95,6 +96,14 @@ class ProjectToolsController extends Controller
                         $localTool = ProjectTools::find($tool);
                         $localTool->status_id = $status;
                         $localTool->save();
+
+                        if($reqComment !== '') {
+                            $comment = new Comments();
+                            $comment->entity_type = "TOOL_COMMENT";
+                            $comment->entity_id = $tool;
+                            $comment->comment = $reqComment;
+                            $comment->save();
+                        }
                     }
 
                     return response()->json(
