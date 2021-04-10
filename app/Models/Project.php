@@ -27,7 +27,7 @@ class Project extends ExtraModel
 
     public function projectTools()
     {
-        return $this->hasMany('App\Models\ProjectTools', 'project_id', 'id');
+        return $this->hasMany('App\Models\ProjectTools', 'project_id', 'id')->orderBy('project_id', 'asc');
     }
 
     public function projectClinics()

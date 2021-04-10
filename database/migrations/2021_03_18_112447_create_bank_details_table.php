@@ -17,7 +17,7 @@ class CreateBankDetailsTable extends Migration
             'bank_details',
             function (Blueprint $table) {
                 $table->bigIncrements('id');
-                $table->integer('external_id');
+                $table->integer('external_id')->default(0);
                 $table->string('company_id');
                 $table->string('name');
                 $table->string('shortname');
@@ -29,8 +29,8 @@ class CreateBankDetailsTable extends Migration
                 $table->string('email');
                 $table->string('inn');
                 $table->string('ogrn');
-                $table->string('bank_details');
-                $table->string('licenses');
+                $table->string('bank_details')->default('');
+                $table->string('licenses')->default('');
 
                 $table->timestamps();
             }

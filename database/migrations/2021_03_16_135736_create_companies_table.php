@@ -20,7 +20,7 @@ class CreateCompaniesTable extends Migration
             $table->string('director_id');
             $table->string('phone');
             $table->string('email');
-            $table->string('logo');
+            $table->string('logo')->default('');
             $table->timestamps();
         });
     }
