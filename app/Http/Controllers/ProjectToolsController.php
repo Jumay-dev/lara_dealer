@@ -122,7 +122,7 @@ class ProjectToolsController extends Controller
             return response()->json(
                 [
                     'success' => false,
-                    'error' => $error,
+                    'error' => $error->getMessage(),
                     'ert' => $arToolsToUpdate,
                     'stat' => $status
                 ]
