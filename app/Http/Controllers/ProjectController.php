@@ -41,7 +41,13 @@ class ProjectController extends Controller
         $project = new Project;
         $project->id = $projectId;
 
-        return response()->json($project->projectTools);
+        $tools = $project->projectTools;
+
+        foreach ($tools as $tool) {
+            $tool['last_comment'] = $tool->lastComment;
+        }
+
+        return response()->json($tools);
     }
 
     public function create()
@@ -130,6 +136,7 @@ class ProjectController extends Controller
         if (isset($id) && $id !== '') {
             $project = new Project;
             $proj_res = $project->find($id);
+            //$proj_res->created_at = $proj_res->created_at->format('d.m.Y');
             if ($proj_res) {
                 return response()->json(
                     [

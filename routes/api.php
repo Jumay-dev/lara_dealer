@@ -103,5 +103,6 @@ Route::group(
     ],
     function() {
         Route::post('/authorisation', [ProjectToolsController::class, 'changeStatus']);
+        Route::post('/comments', [ProjectToolsController::class, 'commentList']);
     }
 );

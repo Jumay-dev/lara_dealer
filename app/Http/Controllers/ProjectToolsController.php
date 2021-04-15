@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProjectTools;
 use App\Models\Comments;
+use App\Models\ProjectTools;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ProjectToolsController extends Controller
@@ -97,7 +98,7 @@ class ProjectToolsController extends Controller
                         $localTool->status_id = $status;
                         $localTool->save();
 
-                        if($reqComment !== '') {
+                        if ($reqComment !== '') {
                             $comment = new Comments();
                             $comment->entity_type = "TOOL_COMMENT";
                             $comment->entity_id = $tool;
@@ -125,6 +126,39 @@ class ProjectToolsController extends Controller
                     'error' => $error->getMessage(),
                     'ert' => $arToolsToUpdate,
                     'stat' => $status
+                ]
+            );
+        }
+    }
+
+    public function commentList()
+    {
+        $toolID = request('id');
+        try {
+            try {
+                $localTool = ProjectTools::findOrFail($toolID);
+
+                return response()->json(
+                    [
+                        'success' => true,
+                        'comments' => $localTool->comments
+                    ]
+                );
+            } catch (ModelNotFoundException $error) {
+                return response()->json(
+                    [
+                        'success' => false,
+                        'comments' => [],
+                        'error' => 'Tool not found'
+                    ]
+                );
+            }
+        } catch (\Exception $error) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'comments' => [],
+                    'error' => $error->getMessage()
                 ]
             );
         }
