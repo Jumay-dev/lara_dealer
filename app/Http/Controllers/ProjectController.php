@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\ExtraUser;
+use App\Mail\ProjectAddedMail;
 use App\Models\Clinic;
+use App\Models\Comments;
 use App\Models\Project;
 use App\Models\ProjectTools;
-use App\Mail\TestMail;
-use App\Mail\ProjectAddedMail;
-use App\ExtraUser;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
 class ProjectController extends Controller
@@ -22,10 +21,11 @@ class ProjectController extends Controller
         $user = new ExtraUser;
         $projects = $project->paginate($perPage);
 
-        foreach($projects as $proj) {
+        foreach ($projects as $proj) {
             $proj['responsible'] = $user->find($proj['employee']);
             $proj['clinics'] = $proj->projectClinics;
             $proj['dealer'] = $proj->projectDealer;
+            $proj['last_comment'] = $proj->lastComment;
         }
 
         return response()->json(
@@ -36,7 +36,8 @@ class ProjectController extends Controller
         );
     }
 
-    public function tools() {
+    public function tools()
+    {
         $projectId = request('id');
         $project = new Project;
         $project->id = $projectId;
@@ -52,6 +53,22 @@ class ProjectController extends Controller
 
     public function create()
     {
+//        DB::beginTransaction();
+//        try {
+//            $model1 = new Type();
+//            $model1->test = 'great';
+//
+//            $model2 = new Type();
+//            $model2->test2 = 'awesome';
+//
+//            if ($model1->save() && $model2->save()) {
+//                DB::commit();
+//            } else {
+//                DB::rollBack();
+//            }
+//        } catch(Exception $e){
+//            DB::rollBack();
+//        }
         $project = new Project;
 
         $project->external_id = 0;
@@ -64,69 +81,112 @@ class ProjectController extends Controller
         $project->status = "4";
         $user = new ExtraUser;
 
-            $project->saveOrFail();
+        $project->saveOrFail();
 
-            $clinicInfo = json_decode(request('clinic'));
+        $clinicInfo = json_decode(request('clinic'));
 
-            $clinic = new Clinic;
-            $clinic->external_id = 0;
-            $clinic->project_id = $project->id;
-            $clinic->name = $clinicInfo->clinicName;
-            $clinic->urname = $clinicInfo->clinicUr;
-            $clinic->address = $clinicInfo->clinicAddress;
-            $clinic->inn = $clinicInfo->clinicInn;
-            $clinic->is_subdealer = 0;
-            $clinic->save();
+        $clinic = new Clinic;
+        $clinic->external_id = 0;
+        $clinic->project_id = $project->id;
+        $clinic->name = $clinicInfo->clinicName;
+        $clinic->urname = $clinicInfo->clinicUr;
+        $clinic->address = $clinicInfo->clinicAddress;
+        $clinic->inn = $clinicInfo->clinicInn;
+        $clinic->is_subdealer = 0;
+        $clinic->save();
 
-            $project->client = $clinic->id;
-            $project->saveOrFail();
+        $project->client = $clinic->id;
+        $project->saveOrFail();
 
-            if ($subdealerInfo = request('subdealer')) {
-                $subdealer = new Clinic;
-                $subdealer->external_id = 0;
-                $subdealer->project_id = $project->id;
-                $subdealer->name = $subdealerInfo->dealerName;
-                $subdealer->urname = $subdealerInfo->dealerUr;
-                $subdealer->address = $subdealerInfo->dealerAddress;
-                $subdealer->inn = $subdealerInfo->dealerInn;
-                $subdealer->is_subdealer = 1;
-                $subdealer->save();
+        if ($subdealerInfo = request('subdealer')) {
+            $subdealer = new Clinic;
+            $subdealer->external_id = 0;
+            $subdealer->project_id = $project->id;
+            $subdealer->name = $subdealerInfo->dealerName;
+            $subdealer->urname = $subdealerInfo->dealerUr;
+            $subdealer->address = $subdealerInfo->dealerAddress;
+            $subdealer->inn = $subdealerInfo->dealerInn;
+            $subdealer->is_subdealer = 1;
+            $subdealer->save();
+        }
+
+        if ($projectId = $project->id) {
+            $tools_array = explode(',', \request('tools'));
+            foreach ($tools_array as $projTool) {
+                $tool = new ProjectTools;
+                $tool->project_id = $projectId;
+                $tool->tool_id = trim($projTool);
+                $tool->status_id = 0;
+                $tool->save();
             }
 
-            if ($projectId = $project->id) {
-                $tools_array = explode(',', \request('tools'));
-                foreach ($tools_array as $projTool) {
-                    $tool = new ProjectTools;
-                    $tool->project_id = $projectId;
-                    $tool->tool_id = trim($projTool);
-                    $tool->status_id = 0;
-                    $tool->save();
-                }
+            $infoToMail = [
+                'project' => $project,
+                'tools' => $tools_array,
+                'clinic' => $clinic,
+                'user' => $user->find(request('employee'))
+            ];
 
-                $infoToMail = [
-                    'project' => $project,
-                    'tools' => $tools_array,
-                    'clinic' => $clinic,
-                    'user' => $user->find(request('employee'))
-                ];
+            Mail::to('osipovm33rus@gmail.com')->queue(new ProjectAddedMail($infoToMail));
 
-                Mail::to('osipovm33rus@gmail.com')->queue(new ProjectAddedMail($infoToMail));
+            return response()->json(
+                [
+                    'success' => true,
+                    'result' => "Проект создан",
+                    'test' => json_decode(request('clinic'))
+                ]
+            );
+        } else {
+            return response()->json(
+                [
+                    'success' => true,
+                    'result' => "Ошибка создания проекта"
+                ]
+            );
+        }
+    }
 
-                return response()->json(
-                    [
-                        'success' => true,
-                        'result' => "Проект создан",
-                        'test' => json_decode(request('clinic'))
-                    ]
-                );
-            } else {
-                return response()->json(
-                    [
-                        'success' => true,
-                        'result' => "Ошибка создания проекта"
-                    ]
-                );
-            }
+    public function comment()
+    {
+        $entity_id = request('entity_id');
+        $commentText = request('comment');
+        $comment = new Comments;
+        $comment->entity_id = $entity_id;
+        $comment->entity_type = 'PROJECT_COMMENT';
+        $comment->comment = $commentText;
+        try {
+            $comment->saveOrFail();
+            return [
+                'success' => true
+            ];
+        } catch (\Exception $error) {
+            return [
+                'success' => false,
+                'message' => $error->getMessage()
+            ];
+        }
+    }
+
+    public function getCommentsList() {
+        $entity_id = request('entity_id');
+        $project = new Project;
+        try {
+            $pr = $project->find($entity_id);
+            return response()->json(
+                [
+                    'success' => true,
+                    'comments' => $pr->commentList,
+                    'project' => $pr
+                ]
+            );
+        } catch (\Exception $error) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'error' => $error
+                ]
+            );
+        }
     }
 
     public function get()

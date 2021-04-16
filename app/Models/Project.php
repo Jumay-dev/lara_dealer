@@ -27,7 +27,7 @@ class Project extends ExtraModel
 
     public function projectTools()
     {
-        return $this->hasMany('App\Models\ProjectTools', 'project_id', 'id');
+        return $this->hasMany('App\Models\ProjectTools', 'project_id', 'id')->orderBy('project_id', 'asc');
     }
 
     public function projectClinics()
@@ -37,5 +37,23 @@ class Project extends ExtraModel
 
     public function projectDealer() {
         return $this->hasOne('App\Models\Company', 'id', 'dealer');
+    }
+
+    public function lastComment() {
+        $comment = $this->hasOne('App\Models\Comments', 'entity_id', 'id')
+            ->where('entity_type', 'PROJECT_COMMENT')
+            ->orderBy('comments.created_at', 'desc')
+            ->join('users', 'created_by', '=', 'users.id')
+            ->select('comments.comment', 'comments.created_at', 'users.name', 'users.surname')
+            ->limit(1);
+        return $comment;
+    }
+
+    public function commentList() {
+        return $this->hasMany('App\Models\Comments', 'entity_id', 'id')
+            ->where('entity_type', 'PROJECT_COMMENT')
+            ->orderBy('comments.created_at', 'desc')
+            ->join('users', 'created_by', '=', 'users.id')
+            ->select('comments.comment', 'comments.created_at', 'users.name', 'users.surname');
     }
 }

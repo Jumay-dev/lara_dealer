@@ -18,6 +18,7 @@ class CreateCommentsTable extends Migration
             $table->string('entity_type');
             $table->integer('entity_id');
             $table->string('comment');
+            $table->integer('created_by');
             $table->timestamps();
         });
     }

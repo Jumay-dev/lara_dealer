@@ -8,6 +8,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\BankDetailsController;
 use App\Http\Controllers\SyncController;
 use App\Http\Controllers\ProjectToolsController;
+use App\Http\Controllers\CommentsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -73,6 +74,8 @@ Route::group(
         Route::post('/get', [ProjectController::class, 'get']);
         Route::post('/update', [ProjectController::class, 'update']);
         Route::post('/delete', [ProjectController::class, 'delete']);
+        Route::post('/comment', [ProjectController::class, 'comment']);
+        Route::post('/commentlist', [ProjectController::class, 'getCommentsList']);
         Route::post('/search', [ProjectController::class, 'search']);
     }
 );
@@ -104,5 +107,14 @@ Route::group(
     function() {
         Route::post('/authorisation', [ProjectToolsController::class, 'changeStatus']);
         Route::post('/comments', [ProjectToolsController::class, 'commentList']);
+    }
+);
+
+Route::group(
+    [
+        'prefix' => 'comment'
+    ],
+    function() {
+//        Route::post('/create', [CommentsController::class, 'create']);
     }
 );

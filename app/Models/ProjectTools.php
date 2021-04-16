@@ -17,10 +17,12 @@ class ProjectTools extends ExtraModel
 
     public function lastComment()
     {
-        return $this->hasMany('App\Models\Comments', 'entity_id', 'id')
+        return $this->hasOne('App\Models\Comments', 'entity_id', 'id')
             ->where('entity_type', 'TOOL_COMMENT')
             ->select(['comment', 'created_at'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('comments.created_at', 'desc')
+            ->join('users', 'created_by', '=', 'users.id')
+            ->select('comments.comment', 'comments.created_at', 'users.name', 'users.surname')
             ->limit(1);
     }
 
@@ -28,7 +30,9 @@ class ProjectTools extends ExtraModel
         return $this->hasMany('App\Models\Comments', 'entity_id', 'id')
             ->where('entity_type', 'TOOL_COMMENT')
             ->select(['comment', 'created_at'])
-            ->orderBy('created_at', 'desc');
+            ->orderBy('comments.created_at', 'desc')
+            ->join('users', 'created_by', '=', 'users.id')
+            ->select('comments.comment', 'comments.created_at', 'users.name', 'users.surname');
     }
 
 

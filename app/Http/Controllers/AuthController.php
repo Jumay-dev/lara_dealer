@@ -4,6 +4,7 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+
 //use Illuminate\Foundation\Auth;
 use Illuminate\Support\Facades\Request;
 
@@ -36,7 +37,12 @@ class AuthController extends Controller
         $user['id'] = auth()->id();
         $user['roles'] = auth()->user()->getRoleNames();
         $company = $user->company;
-        $company['director'] = $user->find($company->director_id);
+        try {
+            $company['director'] = $user->find($company->director_id);
+        } catch (\Exception $error) {
+            $company['director'] = $error->getMessage();
+        }
+
         $user['company'] = $company;
 
         return response()->json([
@@ -73,18 +79,22 @@ class AuthController extends Controller
      */
     public function me()
     {
-            $user = auth()->user();
-            $user['roles'] = auth()->user()->getRoleNames();
-            $user['id'] = auth()->id();
+        $user = auth()->user();
+        $user['roles'] = auth()->user()->getRoleNames();
+        $user['id'] = auth()->id();
 
-            $company = $user->company;
+        $company = $user->company;
+        try {
             $company['director'] = $user->find($company->director_id);
-            $user['company'] = $company;
+        } catch (\Exception $error) {
+            $company['director'] = $error->getMessage();
+        }
+        $user['company'] = $company;
 
-            return response()->json([
-                'user' => $user,
-                'success' => true,
-            ]);
+        return response()->json([
+            'user' => $user,
+            'success' => true,
+        ]);
     }
 
     /**

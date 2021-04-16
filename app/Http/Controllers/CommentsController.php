@@ -24,7 +24,10 @@ class CommentsController extends Controller
      */
     public function create()
     {
-        //
+        $entity_id = request('entity_id');
+        $entity_type = request('entity_type');
+        $comment = request('comment');
+        //TODO: do interface for comments hadling
     }
 
     /**

@@ -21,7 +21,7 @@ class CreateToolsTable extends Migration
             $table->string('tool_provider');
             $table->string('tool_sort');
             $table->string('visibility');
-            $table->string('price');
+            $table->string('price')->default('');
             $table->string('price_cur');
 
             $table->timestamps();
