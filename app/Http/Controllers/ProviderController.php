@@ -2,98 +2,89 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MailTemplate;
+use App\Models\Project;
 use App\Models\Provider;
-use Illuminate\Http\Request;
 
 class ProviderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    protected $table = 'providers';
+
     public function index()
     {
-        //
+        $user = auth()->user();
+        if ($user->hasRole('admin') || $user->hasRole('authorizator')) {
+            return response()->json(
+                [
+                    'success' => true,
+                    'providers' => Provider::all()
+                ]
+            );
+        }
     }
 
-    public function getTemplate() {
+    public function getTemplate()
+    {
         $provider_id = request('provider_id');
-        if (empty($provider_id)) {
-            return response()->json([
-                'success' => false
-                                    ]);
+        $project_id = request('project_id');
+
+        if (empty($provider_id) || empty($project_id)) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'error' => 'provider or project id is empty'
+                ]
+            );
         }
         $provider = new Provider;
-        return [
-            'success' => true,
-            'template' => response()->json($provider->template)
-        ];
-    }
+        $project = new Project;
+        try {
+            $provider->find($provider_id);
+            $project->find($project_id);
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+            $manager = 'TODO!!';
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+            $template = $provider->template;
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Provider  $provider
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Provider $provider)
-    {
-        //
-    }
+            if (!$template) {
+                $template = MailTemplate::where('provider_id', 0)->first();
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Provider  $provider
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Provider $provider)
-    {
-        //
-    }
+                $dictionary = [
+                    '#subject#' =>  $template['subject'],
+                    '#responsible#' =>  $provider->find($provider_id)->responsible,
+                    '#manager_name#' => $manager,
+                ];
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Provider  $provider
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Provider $provider)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Provider  $provider
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Provider $provider)
-    {
-        //
+                return response()->json(
+                    [
+                        'success' => true,
+                        'template' => $template,
+                        'default' => false,
+                        'dictionary' => $dictionary
+                    ]
+                );
+            }
+            $dictionary = [
+                '#subject#' =>  $template['subject'],
+                '#responsible#' =>  $provider->responsible,
+                '#manager_name#' => $manager
+            ];
+            return response()->json(
+                [
+                    'success' => true,
+                    'template' => $template,
+                    'default' => false,
+                    'dictionary' => $dictionary
+                ]
+            );
+        } catch (\Exception $error) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'error' => $error->getMessage(),
+                    'default' => true
+                ]
+            );
+        }
     }
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\BankDetailsController;
 use App\Http\Controllers\SyncController;
 use App\Http\Controllers\ProjectToolsController;
 use App\Http\Controllers\CommentsController;
+use App\Http\Controllers\ProviderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -107,6 +108,16 @@ Route::group(
     function() {
         Route::post('/authorisation', [ProjectToolsController::class, 'changeStatus']);
         Route::post('/comments', [ProjectToolsController::class, 'commentList']);
+    }
+);
+
+Route::group(
+    [
+        'prefix' => 'provider'
+    ],
+    function() {
+        Route::post('/list', [ProviderController::class, 'index']);
+        Route::post('/template', [ProviderController::class, 'getTemplate']);
     }
 );
 
