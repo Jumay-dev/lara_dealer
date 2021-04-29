@@ -9,6 +9,7 @@ use App\Models\Comments;
 use App\Models\Project;
 use App\Models\ProjectTools;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Mail\Mailable;
 
 class ProjectController extends Controller
 {

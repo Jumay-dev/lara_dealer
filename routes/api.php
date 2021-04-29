@@ -118,6 +118,7 @@ Route::group(
     function() {
         Route::post('/list', [ProviderController::class, 'index']);
         Route::post('/template', [ProviderController::class, 'getTemplate']);
+        Route::post('/sending', [ProviderController::class, 'sendMailsByQueue']);
     }
 );
 

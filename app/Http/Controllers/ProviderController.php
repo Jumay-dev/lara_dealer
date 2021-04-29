@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ProjectAddedMail;
 use App\Models\MailTemplate;
 use App\Models\Project;
 use App\Models\Provider;
+use App\Mail\ProviderRequestMail;
+use Illuminate\Support\Facades\Mail;
 
 class ProviderController extends Controller
 {
@@ -18,6 +21,31 @@ class ProviderController extends Controller
                 [
                     'success' => true,
                     'providers' => Provider::all()
+                ]
+            );
+        }
+    }
+
+    public function sendMailsByQueue()
+    {
+        $mails = json_decode(request('mails'));
+        $project_id = request('project_id');
+
+        try {
+            foreach ($mails as $mail) {
+                $provider = Provider::find($mail->provider_id);
+                Mail::to($provider->email)->queue(new ProviderRequestMail($mail->body));
+            }
+            return response()->json(
+                [
+                    'success' => true
+                ]
+            );
+        } catch (\Exception $error) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'error' => $error->getMessage()
                 ]
             );
         }
@@ -50,8 +78,8 @@ class ProviderController extends Controller
                 $template = MailTemplate::where('provider_id', 0)->first();
 
                 $dictionary = [
-                    '#subject#' =>  $template['subject'],
-                    '#responsible#' =>  $provider->find($provider_id)->responsible,
+                    '#subject#' => $template['subject'],
+                    '#responsible#' => $provider->find($provider_id)->responsible,
                     '#manager_name#' => $manager,
                 ];
 
@@ -65,8 +93,8 @@ class ProviderController extends Controller
                 );
             }
             $dictionary = [
-                '#subject#' =>  $template['subject'],
-                '#responsible#' =>  $provider->responsible,
+                '#subject#' => $template['subject'],
+                '#responsible#' => $provider->responsible,
                 '#manager_name#' => $manager
             ];
             return response()->json(
