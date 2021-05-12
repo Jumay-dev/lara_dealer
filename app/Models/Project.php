@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProjectTools;
+use Spatie\Searchable\Searchable;
+use Spatie\Searchable\SearchResult;
 
 class Project extends ExtraModel
 {
@@ -56,4 +58,12 @@ class Project extends ExtraModel
             ->join('users', 'created_by', '=', 'users.id')
             ->select('comments.comment', 'comments.created_at', 'users.name', 'users.surname');
     }
+
+//    public function getSearchResult(): SearchResult
+//    {
+//        return new \Spatie\Searchable\SearchResult(
+//            $this,
+//            $this->projectClinics->name,
+//        );
+//    }
 }

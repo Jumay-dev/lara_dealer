@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\ProjectTools;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Mail\Mailable;
+use Spatie\Searchable\Search;
 
 class ProjectController extends Controller
 {
@@ -18,9 +19,12 @@ class ProjectController extends Controller
     public function list()
     {
         $perPage = request('limit');
+        $luName = request('lu_name');
         $project = new Project;
         $user = new ExtraUser;
-        $projects = $project->paginate($perPage);
+        $projects = $project->where('projectDealer.id', 'LIKE', '%' . 1 . '%')->paginate($perPage);
+
+//        $searchResults = (new Search())->registerModel(Project::class, 'projectClinics')->search('');
 
         foreach ($projects as $proj) {
             $proj['responsible'] = $user->find($proj['employee']);
