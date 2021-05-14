@@ -57,12 +57,22 @@ class ProjectController extends Controller
             $projects = $projects
                 ->orWhere('clinics.inn', 'LIKE', "%" . request('inn') . "%");
         }
-        $tools = '';
+        $projectIds = [];
         if (!empty(request('tool'))) {
             $requestTool = request('tool');
             $projectIds = array_column(DB::select("SELECT project_id FROM project_tools
             JOIN tools ON tools.tool_name LIKE '%$requestTool%'
             AND tools.id = project_tools.tool_id
+            JOIN projects ON projects.id = project_tools.project_id"), 'project_id');
+            $projects = Project::whereIn('id', $projectIds);
+        }
+
+        if (!empty(request('tool_type'))) {
+            $requestToolType = intval(request('tool_type'));
+            $projectIds = array_column(DB::select("
+            SELECT * FROM project_tools
+            JOIN tools ON tools.id = project_tools.tool_id
+            JOIN categories ON tools.category_id = $requestToolType
             JOIN projects ON projects.id = project_tools.project_id"), 'project_id');
             $projects = Project::whereIn('id', $projectIds);
         }
@@ -79,8 +89,8 @@ class ProjectController extends Controller
             [
                 "success" => true,
                 "projects" => $projects,
-                'query' => urldecode(request('tool')),
-                'tools' => $tools
+                'query' => urldecode(request('tool_type')),
+                'tools' => $projectIds
             ]
         );
     }
