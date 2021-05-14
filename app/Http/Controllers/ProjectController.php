@@ -53,10 +53,6 @@ class ProjectController extends Controller
             $projects = $projects
                 ->orWhere('clinics.inn', 'LIKE', "%" . request('inn') . "%");
         }
-        if (!empty(request('inn'))) {
-            $projects = $projects
-                ->orWhere('clinics.inn', 'LIKE', "%" . request('inn') . "%");
-        }
         $projectIds = [];
         if (!empty(request('tool'))) {
             $requestTool = request('tool');
@@ -67,7 +63,7 @@ class ProjectController extends Controller
             $projects = Project::whereIn('id', $projectIds);
         }
 
-        if (!empty(request('tool_type'))) {
+        if (!empty(request('tool_type') && request('tool_type') !== 'all')) {
             $requestToolType = intval(request('tool_type'));
             $projectIds = array_column(DB::select("
             SELECT * FROM project_tools
