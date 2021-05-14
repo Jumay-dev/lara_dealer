@@ -8,9 +8,11 @@ use App\Models\Clinic;
 use App\Models\Comments;
 use App\Models\Project;
 use App\Models\ProjectTools;
+use App\Models\Tools;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Mail\Mailable;
 use Spatie\Searchable\Search;
+use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
@@ -19,14 +21,54 @@ class ProjectController extends Controller
     public function list()
     {
         $perPage = request('limit');
-        $luName = request('lu_name');
-        $project = new Project;
+        $project = (new Project)::with('projectTools', 'projectClinics');
         $user = new ExtraUser;
-        $projects = $project->where('projectDealer.id', 'LIKE', '%' . 1 . '%')->paginate($perPage);
+        $projects = $project
+            ->join('users', 'created_by', '=', 'users.id')
+            ->join('clinics', 'client', '=', 'clinics.id')
+            ->select(
+                'projects.id',
+                'projects.dealer',
+                'projects.employee',
+                'projects.client',
+                'projects.manager_id',
+                'projects.actualised_at',
+                'projects.expires_at',
+                'projects.created_by',
+                'projects.updated_by',
+                'projects.created_at',
+                'projects.updated_at',
+            );
+        if (!empty(request('manager'))) {
+            $projects = $projects
+                ->orWhere('users.name', 'LIKE', "%" . request('manager') . "%")
+                ->orWhere('users.surname', 'LIKE', "%" . request('manager') . "%");
+        }
+        if (!empty(request('lu_name'))) {
+            $projects = $projects
+                ->orWhere('clinics.name', 'LIKE', "%" . request('lu_name') . "%")
+                ->orWhere('clinics.urname', 'LIKE', "%" . request('lu_name') . "%");
+        }
+        if (!empty(request('inn'))) {
+            $projects = $projects
+                ->orWhere('clinics.inn', 'LIKE', "%" . request('inn') . "%");
+        }
+        if (!empty(request('inn'))) {
+            $projects = $projects
+                ->orWhere('clinics.inn', 'LIKE', "%" . request('inn') . "%");
+        }
+        $tools = '';
+        if (!empty(request('tool'))) {
+            $requestTool = urlencode(request('tool'));
+            $projectIds = array_column(DB::select("SELECT project_id FROM project_tools
+            JOIN tools ON tools.tool_name LIKE '%$requestTool%'
+            AND tools.id = project_tools.tool_id
+            JOIN projects ON projects.id = project_tools.project_id"), 'project_id');
+            $projects = Project::whereIn('id', $projectIds);
+        }
+        $projects = $projects->paginate($perPage);
 
-//        $searchResults = (new Search())->registerModel(Project::class, 'projectClinics')->search('');
-
-        foreach ($projects as $proj) {
+        foreach ($projects as $pid => $proj) {
             $proj['responsible'] = $user->find($proj['employee']);
             $proj['clinics'] = $proj->projectClinics;
             $proj['dealer'] = $proj->projectDealer;
@@ -36,7 +78,9 @@ class ProjectController extends Controller
         return response()->json(
             [
                 "success" => true,
-                "projects" => $projects
+                "projects" => $projects,
+                'query' => urldecode(request('tool')),
+                'tools' => $tools
             ]
         );
     }
