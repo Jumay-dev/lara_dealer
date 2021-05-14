@@ -59,7 +59,7 @@ class ProjectController extends Controller
         }
         $tools = '';
         if (!empty(request('tool'))) {
-            $requestTool = urlencode(request('tool'));
+            $requestTool = request('tool');
             $projectIds = array_column(DB::select("SELECT project_id FROM project_tools
             JOIN tools ON tools.tool_name LIKE '%$requestTool%'
             AND tools.id = project_tools.tool_id
