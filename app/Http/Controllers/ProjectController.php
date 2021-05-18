@@ -9,6 +9,7 @@ use App\Models\Comments;
 use App\Models\Project;
 use App\Models\ProjectTools;
 use App\Models\Tools;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Mail\Mailable;
 use Spatie\Searchable\Search;
@@ -72,6 +73,13 @@ class ProjectController extends Controller
             JOIN projects ON projects.id = project_tools.project_id"), 'project_id');
             $projects = Project::whereIn('id', $projectIds);
         }
+
+        $datetimeStart = request('datetime_start');
+        $datetimeEnd = request('datetime_end');
+
+        if (!empty($datetimeStart) || !empty($datetimeEnd)) {
+            $projects = $this->searchProjectsByDate($datetimeStart, $datetimeEnd);
+        }
         $projects = $projects->paginate($perPage);
 
         foreach ($projects as $pid => $proj) {
@@ -89,6 +97,20 @@ class ProjectController extends Controller
                 'tools' => $projectIds
             ]
         );
+    }
+
+    private function searchProjectsByDate($datetimeStart, $datetimeEnd) {
+        $projects = new Project();
+        if (isset($datetimeStart) && isset($datetimeEnd)) {
+            return $projects->whereBetween('created_at', [Carbon::createFromTimestamp($datetimeStart), Carbon::createFromTimestamp($datetimeEnd)]);
+        }
+        if (isset($datetimeStart)) {
+            $projects = $projects->orWhere('created_at', '>', Carbon::createFromTimestamp($datetimeStart));
+        }
+        if (isset($datetimeEnd)) {
+            $projects = $projects->orWhere('created_at', '<', Carbon::createFromTimestamp($datetimeEnd));
+        }
+        return $projects;
     }
 
     public function tools()
