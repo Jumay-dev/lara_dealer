@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Categories;
 use App\Models\Tools;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class SyncController extends Controller
 {
     private static $BXApiRoute = 'https://crm.dsmed.ru/rest/3/salvy8pkuk7myzov/';
     private static $BXContentQuery = 'dealerLara.categories';
+    private static $oldDealerRoute = 'http://dealer.dsmed.ru/sync/';
 
     public static function syncWithBX()
     {
@@ -23,8 +25,43 @@ class SyncController extends Controller
         return $BXtools;
     }
 
+    public static function syncWithOldDealer() {
+        $cats = self::syncCategoriesWithOldDealer();
+//        $tools = self::syncToolsWithOldDealer();
+        return response()->json([
+            'cats' => $cats,
+                                ]);
+    }
+
     public static function syncWithWP()
     {
+    }
+
+    private static function syncCategoriesWithOldDealer() {
+        $oldDealerCategories = Http::get(self::$oldDealerRoute . '?type=CATEGORIES')->json();
+        $catIdsfromDB = array_column(DB::table('categories')->select('external_id')->get()->toArray(), 'external_id');
+        foreach ($oldDealerCategories as $externalCategory) {
+            $key = !empty($externalCategory["id"]) ? "id" : "sub_id";
+
+            if (!in_array(md5($externalCategory['block_name'] . $externalCategory[$key]), $catIdsfromDB)) {
+                $newCategory = new Categories;
+                if (!empty($externalCategory['sub_id'])) {
+                    $newCategory->external_id = md5($externalCategory['block_name'] . $externalCategory['sub_id']);
+                } else {
+                    $newCategory->external_id = md5($externalCategory['block_name'] . $externalCategory['id']);
+                }
+                $newCategory->category_name = $externalCategory['block_name'];
+                $newCategory->visibility = 0;
+                $newCategory->save();
+            }
+        }
+        return true;
+//        return $oldDealerCategories;
+    }
+
+    private static function syncToolsWithOldDealer() {
+        $oldDealerTools = Http::get(self::$oldDealerRoute . '?type=TOOLS')->json();
+        return $oldDealerTools;
     }
 
     public static function syncCategories($BXcategories): array

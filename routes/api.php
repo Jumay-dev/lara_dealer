@@ -98,6 +98,7 @@ Route::group(
     ],
     function() {
         Route::get('/bitrix', [SyncController::class, 'syncWithBX']);
+        Route::get('/dealer', [SyncController::class, 'syncWithOldDealer']);
     }
 );
 
