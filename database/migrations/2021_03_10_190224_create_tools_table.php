@@ -23,6 +23,7 @@ class CreateToolsTable extends Migration
             $table->string('visibility');
             $table->string('price')->default('');
             $table->string('price_cur');
+            $table->string('entity_type');
 
             $table->timestamps();
         });

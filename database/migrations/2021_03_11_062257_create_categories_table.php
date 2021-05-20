@@ -17,6 +17,7 @@ class CreateCategoriesTable extends Migration
             $table->bigIncrements('id');
             $table->string('external_id');
             $table->string('category_name');
+            $table->string('entity_type');
             $table->string('visibility');
             $table->timestamps();
         });

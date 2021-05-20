@@ -26,10 +26,11 @@ class SyncController extends Controller
     }
 
     public static function syncWithOldDealer() {
-        $cats = self::syncCategoriesWithOldDealer();
-//        $tools = self::syncToolsWithOldDealer();
+//        $cats = self::syncCategoriesWithOldDealer();
+        $tools = self::syncToolsWithOldDealer();
         return response()->json([
-            'cats' => $cats,
+//            'cats' => $cats,
+            'tools' => $tools
                                 ]);
     }
 
@@ -39,19 +40,20 @@ class SyncController extends Controller
 
     private static function syncCategoriesWithOldDealer() {
         $oldDealerCategories = Http::get(self::$oldDealerRoute . '?type=CATEGORIES')->json();
-        $catIdsfromDB = array_column(DB::table('categories')->select('external_id')->get()->toArray(), 'external_id');
+        $catIdsfromDB = array_column(DB::table('categories')->where('entity_type', '=', 'DEALER')->select('external_id')->get()->toArray(), 'external_id');
         foreach ($oldDealerCategories as $externalCategory) {
             $key = !empty($externalCategory["id"]) ? "id" : "sub_id";
 
             if (!in_array(md5($externalCategory['block_name'] . $externalCategory[$key]), $catIdsfromDB)) {
                 $newCategory = new Categories;
                 if (!empty($externalCategory['sub_id'])) {
-                    $newCategory->external_id = md5($externalCategory['block_name'] . $externalCategory['sub_id']);
+                    $newCategory->external_id = $externalCategory['sub_id'];
                 } else {
-                    $newCategory->external_id = md5($externalCategory['block_name'] . $externalCategory['id']);
+                    $newCategory->external_id =  $externalCategory['id'];
                 }
                 $newCategory->category_name = $externalCategory['block_name'];
                 $newCategory->visibility = 0;
+                $newCategory->entity_type = "DEALER";
                 $newCategory->save();
             }
         }
@@ -61,7 +63,27 @@ class SyncController extends Controller
 
     private static function syncToolsWithOldDealer() {
         $oldDealerTools = Http::get(self::$oldDealerRoute . '?type=TOOLS')->json();
-        return $oldDealerTools;
+        $catIdsWithKeysfromDB = array_column(DB::table('categories')->where('entity_type', '=', 'DEALER')
+                                         ->select('id', 'external_id')->get()->toArray(), 'id', 'external_id');
+        $toolsIdsFromDB = array_column(DB::table('tools')->where('entity_type', '=', 'DEALER')
+                                           ->select('external_id')->get()->toArray(), 'external_id');
+        foreach ($oldDealerTools as $externalTool) {
+            if (!in_array($externalTool['id'], $toolsIdsFromDB)) {
+                $newtool = new Tools();
+                $newtool->external_id = $externalTool['id'];
+                $newtool->tool_name = $externalTool['tool_name'];
+                $newtool->category_id = $catIdsWithKeysfromDB[$externalTool['tool_view_sub_block']];
+                $newtool->tool_provider = '0';
+                $newtool->tool_sort = '0';
+                $newtool->visibility = '0';
+                $newtool->price = '0.00';
+                $newtool->price_cur = 'RUB';
+                $newtool->entity_type = "DEALER";
+                $newtool->save();
+            }
+
+        }
+        return true;
     }
 
     public static function syncCategories($BXcategories): array
@@ -85,6 +107,7 @@ class SyncController extends Controller
                     $LRCategory = Categories::find($foundCatKey);
                     $LRCategory->category_name = $BXCat['NAME'];
                     $LRCategory->visibility = $BXCat['ACTIVE'] === "Y" ? 1 : 0;
+                    $LRCategory->entity_type = 'BITRIX';
                     $LRCategory->save();
                 } catch (\Exception $error) {
                     $LRNewCategory = new Categories();
