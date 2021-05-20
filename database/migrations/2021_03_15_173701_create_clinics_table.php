@@ -22,6 +22,7 @@ class CreateClinicsTable extends Migration
             $table->string('inn');
             $table->string('is_subdealer');
             $table->string('project_id');
+            $table->string('entity_type');
             $table->timestamps();
         });
     }

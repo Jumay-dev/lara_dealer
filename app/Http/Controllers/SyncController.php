@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categories;
+use App\Models\Clinic;
+use App\Models\Project;
+use App\Models\ProjectTools;
 use App\Models\Tools;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use mysql_xdevapi\Exception;
 
 class SyncController extends Controller
 {
@@ -27,10 +32,12 @@ class SyncController extends Controller
 
     public static function syncWithOldDealer() {
 //        $cats = self::syncCategoriesWithOldDealer();
-        $tools = self::syncToolsWithOldDealer();
+//        $tools = self::syncToolsWithOldDealer();
+        $projects = self::syncProjectsWithOldDealer();
         return response()->json([
 //            'cats' => $cats,
-            'tools' => $tools
+//            'tools' => $tools
+        'projects' => $projects
                                 ]);
     }
 
@@ -81,7 +88,65 @@ class SyncController extends Controller
                 $newtool->entity_type = "DEALER";
                 $newtool->save();
             }
+        }
+        return true;
+    }
 
+    private static function syncProjectsWithOldDealer() {
+        $oldDealerProjects = Http::get(self::$oldDealerRoute . '?type=PROJECTS')->json();
+        $projectsExternalIDs = array_column(DB::table('projects')
+                                                ->where('entity_type', '=', 'DEALER')
+                                                ->select('external_id')->get()->toArray(), 'external_id');
+        $localToolsExternalIDs = array_column(DB::table('tools')
+                                             ->where('entity_type', '=', 'DEALER')
+                                             ->select('external_id', 'id')->get()->toArray(), 'id', 'external_id');
+        foreach ($oldDealerProjects as $externalProject) {
+//            var_dump($externalProject['ur_name']);
+//            die();
+            if (!in_array($externalProject['id'], $projectsExternalIDs)) {
+                DB::beginTransaction();
+                try {
+                    $newproj = new Project();
+                    $newclinic = new Clinic();
+
+                    $newproj->external_id = $externalProject['id'];
+                    $newproj->dealer = '1';
+                    $newproj->employee = '1';
+                    $newproj->created_at = $externalProject['date'];
+                    $newproj->manager_id = '0';
+                    $newproj->actualised_at = time();
+                    $newproj->expires_at = time();
+                    $newproj->created_by = '1';
+                    $newproj->updated_by = '1';
+                    $newproj->entity_type = 'DEALER';
+                    $newproj->status = '4';
+                    $newproj->client = '1';
+                    if (!$newproj->save()) throw new \Exception('Project creating error');
+
+                    $newclinic->external_id = '0';
+                    $newclinic->name = $externalProject['brend_name'];
+                    $newclinic->urname = $externalProject['ur_name'];
+                    $newclinic->address = 'Экспортировано';
+                    $newclinic->inn = $externalProject['inn'];
+                    $newclinic->is_subdealer = '0';
+                    $newclinic->entity_type = 'DEALER';
+                    $newclinic->project_id = $newproj->id;
+                    if (!$newclinic->save()) throw new \Exception('Clinic creating error');
+
+                    $externalToolsIDs  = explode(',', $externalProject['tids']);
+                    foreach ($externalToolsIDs as $toolID) {
+                        $newPTool = new ProjectTools();
+                        $newPTool->project_id = $newproj->id;
+                        $newPTool->tool_id = $localToolsExternalIDs[$toolID];
+                        $newPTool->status_id = 0;
+                        if (!$newPTool->save()) throw new \Exception('Error in project tools generation');
+                    }
+                    DB::commit();
+                } catch (\Exception $error) {
+                    DB::rollBack();
+                    return $error->getMessage();
+                }
+            }
         }
         return true;
     }
