@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
 //            $table->integer('external_id');
 
             $table->string('login');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('name');
             $table->string('surname');
             $table->string('patronymic');
@@ -26,6 +26,8 @@ class CreateUsersTable extends Migration
             $table->integer('company_id');
             $table->string('max_discount');
             $table->string('project_visibility');
+            $table->string('entity_type');
+            $table->string('external_id');
 
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Categories;
 use App\Models\Clinic;
+use App\Models\Company;
 use App\Models\Project;
 use App\Models\ProjectTools;
 use App\Models\Tools;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Http;
+use App\User;
 use Illuminate\Support\Facades\DB;
-use mysql_xdevapi\Exception;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class SyncController extends Controller
 {
@@ -30,24 +31,108 @@ class SyncController extends Controller
         return $BXtools;
     }
 
-    public static function syncWithOldDealer() {
+    public static function syncWithOldDealer()
+    {
 //        $cats = self::syncCategoriesWithOldDealer();
 //        $tools = self::syncToolsWithOldDealer();
-        $projects = self::syncProjectsWithOldDealer();
-        return response()->json([
+        $companies = self::syncCompaniesWithOldDealer();
+        $managers = self::syncUsersWithOldDealer();
+//        $projects = self::syncProjectsWithOldDealer();
+        return response()->json(
+            [
 //            'cats' => $cats,
 //            'tools' => $tools
-        'projects' => $projects
-                                ]);
+//        'companies' => $companies
+                'managers' => $managers
+//        'projects' => $projects
+            ]
+        );
     }
 
-    public static function syncWithWP()
+    private static function syncCompaniesWithOldDealer()
     {
+        $oldDealerCompanies = Http::get(self::$oldDealerRoute . '?type=DEALERS')->json();
+        $catIdsfromDB = array_column(
+            DB::table('companies')
+                ->where('entity_type', '=', 'DEALER')
+                ->select('external_id')
+                ->get()->toArray(),
+            'external_id'
+        );
+        foreach ($oldDealerCompanies as $externalCompany) {
+            if (!in_array($externalCompany['id'], $catIdsfromDB)) {
+                $newcompany = new Company();
+                $newcompany->external_id = $externalCompany['id'];
+                $newcompany->name = $externalCompany['dealer_brend_name'] . '(' . $externalCompany['dealer_ur_name'] . ')';
+                $newcompany->phone = $externalCompany['dealer_company_phone'];
+                $newcompany->email = $externalCompany['dealer_company_email'];
+                $newcompany->entity_type = "DEALER";
+                $newcompany->director_id = '0';
+                $newcompany->save();
+            }
+        }
+        return true;
     }
 
-    private static function syncCategoriesWithOldDealer() {
+    private static function syncUsersWithOldDealer()
+    {
+        $oldDealerManagers = Http::get(self::$oldDealerRoute . '?type=MANAGERS')->json();
+        $userExternalIdsfromDB = array_column(
+            DB::table('users')
+                ->where('entity_type', '=', 'DEALER')
+                ->select('external_id')
+                ->get()->toArray(),
+            'external_id'
+        );
+        $companyExternalIdList = array_column(
+            DB::table('companies')
+                ->where('entity_type', '=', 'DEALER')
+                ->select('external_id', 'id')
+                ->get()->toArray(),
+            'id',
+            'external_id'
+        );
+        $chunckedArray = array_chunk($oldDealerManagers, 100);
+        foreach ($chunckedArray as $segment) {
+            DB::beginTransaction();
+            try {
+                foreach ($segment as $externalUser) {
+                    if (!in_array($externalUser['manager_id'], $userExternalIdsfromDB)) {
+                        $user = User::create(
+                            [
+                                'login' => 'info7' . $externalUser['manager_id'],
+                                'email' => $externalUser['manager_email'],
+                                'password' => Hash::make('test'),
+                                'name' => $externalUser['manager_name'],
+                                'surname' => $externalUser['manager_second_name'],
+                                'patronymic' => $externalUser['manager_patronymic'],
+                                'phone' => $externalUser['manager_phone'],
+                                'company_id' => $companyExternalIdList[$externalUser['dealer_id']],
+                                'max_discount' => '10',
+                                'project_visibility' => '0',
+                                'external_id' => $externalUser['manager_id'],
+                                'entity_type' => 'DEALER'
+                            ]
+                        );
+                        $user->assignRole('employee');
+                    }
+                }
+                DB::commit();
+            } catch (\Exception $error) {
+                DB::rollBack();
+            }
+
+        }
+        return true;
+    }
+
+    private static function syncCategoriesWithOldDealer()
+    {
         $oldDealerCategories = Http::get(self::$oldDealerRoute . '?type=CATEGORIES')->json();
-        $catIdsfromDB = array_column(DB::table('categories')->where('entity_type', '=', 'DEALER')->select('external_id')->get()->toArray(), 'external_id');
+        $catIdsfromDB = array_column(
+            DB::table('categories')->where('entity_type', '=', 'DEALER')->select('external_id')->get()->toArray(),
+            'external_id'
+        );
         foreach ($oldDealerCategories as $externalCategory) {
             $key = !empty($externalCategory["id"]) ? "id" : "sub_id";
 
@@ -56,7 +141,7 @@ class SyncController extends Controller
                 if (!empty($externalCategory['sub_id'])) {
                     $newCategory->external_id = $externalCategory['sub_id'];
                 } else {
-                    $newCategory->external_id =  $externalCategory['id'];
+                    $newCategory->external_id = $externalCategory['id'];
                 }
                 $newCategory->category_name = $externalCategory['block_name'];
                 $newCategory->visibility = 0;
@@ -65,15 +150,22 @@ class SyncController extends Controller
             }
         }
         return true;
-//        return $oldDealerCategories;
     }
 
-    private static function syncToolsWithOldDealer() {
+    private static function syncToolsWithOldDealer()
+    {
         $oldDealerTools = Http::get(self::$oldDealerRoute . '?type=TOOLS')->json();
-        $catIdsWithKeysfromDB = array_column(DB::table('categories')->where('entity_type', '=', 'DEALER')
-                                         ->select('id', 'external_id')->get()->toArray(), 'id', 'external_id');
-        $toolsIdsFromDB = array_column(DB::table('tools')->where('entity_type', '=', 'DEALER')
-                                           ->select('external_id')->get()->toArray(), 'external_id');
+        $catIdsWithKeysfromDB = array_column(
+            DB::table('categories')->where('entity_type', '=', 'DEALER')
+                ->select('id', 'external_id')->get()->toArray(),
+            'id',
+            'external_id'
+        );
+        $toolsIdsFromDB = array_column(
+            DB::table('tools')->where('entity_type', '=', 'DEALER')
+                ->select('external_id')->get()->toArray(),
+            'external_id'
+        );
         foreach ($oldDealerTools as $externalTool) {
             if (!in_array($externalTool['id'], $toolsIdsFromDB)) {
                 $newtool = new Tools();
@@ -92,17 +184,23 @@ class SyncController extends Controller
         return true;
     }
 
-    private static function syncProjectsWithOldDealer() {
+    private static function syncProjectsWithOldDealer()
+    {
         $oldDealerProjects = Http::get(self::$oldDealerRoute . '?type=PROJECTS')->json();
-        $projectsExternalIDs = array_column(DB::table('projects')
-                                                ->where('entity_type', '=', 'DEALER')
-                                                ->select('external_id')->get()->toArray(), 'external_id');
-        $localToolsExternalIDs = array_column(DB::table('tools')
-                                             ->where('entity_type', '=', 'DEALER')
-                                             ->select('external_id', 'id')->get()->toArray(), 'id', 'external_id');
+        $projectsExternalIDs = array_column(
+            DB::table('projects')
+                ->where('entity_type', '=', 'DEALER')
+                ->select('external_id')->get()->toArray(),
+            'external_id'
+        );
+        $localToolsExternalIDs = array_column(
+            DB::table('tools')
+                ->where('entity_type', '=', 'DEALER')
+                ->select('external_id', 'id')->get()->toArray(),
+            'id',
+            'external_id'
+        );
         foreach ($oldDealerProjects as $externalProject) {
-//            var_dump($externalProject['ur_name']);
-//            die();
             if (!in_array($externalProject['id'], $projectsExternalIDs)) {
                 DB::beginTransaction();
                 try {
@@ -121,7 +219,9 @@ class SyncController extends Controller
                     $newproj->entity_type = 'DEALER';
                     $newproj->status = '4';
                     $newproj->client = '1';
-                    if (!$newproj->save()) throw new \Exception('Project creating error');
+                    if (!$newproj->save()) {
+                        throw new \Exception('Project creating error');
+                    }
 
                     $newclinic->external_id = '0';
                     $newclinic->name = $externalProject['brend_name'];
@@ -131,15 +231,19 @@ class SyncController extends Controller
                     $newclinic->is_subdealer = '0';
                     $newclinic->entity_type = 'DEALER';
                     $newclinic->project_id = $newproj->id;
-                    if (!$newclinic->save()) throw new \Exception('Clinic creating error');
+                    if (!$newclinic->save()) {
+                        throw new \Exception('Clinic creating error');
+                    }
 
-                    $externalToolsIDs  = explode(',', $externalProject['tids']);
+                    $externalToolsIDs = explode(',', $externalProject['tids']);
                     foreach ($externalToolsIDs as $toolID) {
                         $newPTool = new ProjectTools();
                         $newPTool->project_id = $newproj->id;
                         $newPTool->tool_id = $localToolsExternalIDs[$toolID];
                         $newPTool->status_id = 0;
-                        if (!$newPTool->save()) throw new \Exception('Error in project tools generation');
+                        if (!$newPTool->save()) {
+                            throw new \Exception('Error in project tools generation');
+                        }
                     }
                     DB::commit();
                 } catch (\Exception $error) {
@@ -196,7 +300,8 @@ class SyncController extends Controller
         );;
     }
 
-    public static function syncTools($BXTools, $LRCategories) {
+    public static function syncTools($BXTools, $LRCategories)
+    {
         $LRtoolsInstance = new Tools;
         $LRAllLocalTools = array_column(
             $LRtoolsInstance->all(

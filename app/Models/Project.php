@@ -29,7 +29,7 @@ class Project extends ExtraModel
 
     public function projectTools()
     {
-        return $this->hasMany('App\Models\ProjectTools', 'project_id', 'id')->orderBy('project_id', 'asc');
+        return $this->hasMany('App\Models\ProjectTools', 'project_id', 'id');
     }
 
     public function projectClinics()
@@ -42,28 +42,16 @@ class Project extends ExtraModel
     }
 
     public function lastComment() {
-        $comment = $this->hasOne('App\Models\Comments', 'entity_id', 'id')
-            ->where('entity_type', 'PROJECT_COMMENT')
-            ->orderBy('comments.created_at', 'desc')
-            ->join('users', 'created_by', '=', 'users.id')
-            ->select('comments.comment', 'comments.created_at', 'users.name', 'users.surname')
-            ->limit(1);
-        return $comment;
+        return $this->hasOne('App\Models\Comments', 'entity_id', 'id')
+            ->where('comments.entity_type', '=', 'PROJECT_COMMENT');
     }
 
     public function commentList() {
         return $this->hasMany('App\Models\Comments', 'entity_id', 'id')
-            ->where('entity_type', 'PROJECT_COMMENT')
+            ->where('comments.entity_type', '=', 'PROJECT_COMMENT')
             ->orderBy('comments.created_at', 'desc')
             ->join('users', 'created_by', '=', 'users.id')
             ->select('comments.comment', 'comments.created_at', 'users.name', 'users.surname');
     }
 
-//    public function getSearchResult(): SearchResult
-//    {
-//        return new \Spatie\Searchable\SearchResult(
-//            $this,
-//            $this->projectClinics->name,
-//        );
-//    }
 }

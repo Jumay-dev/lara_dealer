@@ -21,6 +21,7 @@ class CreateCompaniesTable extends Migration
             $table->string('phone');
             $table->string('email');
             $table->string('logo')->default('');
+            $table->string('entity_type');
             $table->timestamps();
         });
     }
