@@ -1,7 +1,12 @@
 <?php namespace App\Http\Controllers;
 
 use App\User;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
+//use Illuminate\Foundation\Auth;
+use Illuminate\Support\Facades\Request;
 
 class AuthController extends Controller
 {
@@ -12,7 +17,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'registration', 'test']]);
+        $this->middleware('auth:api', ['except' => ['login', 'registration']]);
     }
 
     /**
@@ -24,15 +29,27 @@ class AuthController extends Controller
     {
         $credentials = request(['email', 'password']);
 
-        if (! $token = auth()->attempt($credentials)) {
+        if (!$token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized', 'success' => false], 401);
         }
 
-        return [
-            'token' => $this->respondWithToken($token), 
-            'user' => auth()->user(),
-            'success' => true
-        ];
+        $user = auth()->user();
+        $user['id'] = auth()->id();
+        $user['roles'] = auth()->user()->getRoleNames();
+        $company = $user->company;
+        try {
+            $company['director'] = $user->find($company->director_id);
+        } catch (\Exception $error) {
+            $company['director'] = $error->getMessage();
+        }
+
+        $user['company'] = $company;
+
+        return response()->json([
+            'token' => $this->respondWithToken($token),
+            'user' => $user,
+            'success' => true,
+        ]);
     }
 
     /**
@@ -40,17 +57,19 @@ class AuthController extends Controller
      */
     public function registration()
     {
-        $name = request('name');
+        $login = request('login');
         $email = request('email');
         $password = request('password');
 
-        $user = new User();
-        $user->name = $name;
-        $user->email = $email;
-        $user->password = Hash::make($password);
-        $user->save();
+        $user = User::create([
+            'login' => $login,
+            'email' => $email,
+            'password' => Hash::make($password),
+        ]);
+        $user->assignRole('employee');
+//         $user->save();
 
-        return response()->json(['message' => 'Successfully registration!']);
+        return response()->json(['message' => 'Successfully registration!', 'success' => true]);
     }
 
     /**
@@ -60,7 +79,22 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        $user = auth()->user();
+        $user['roles'] = auth()->user()->getRoleNames();
+        $user['id'] = auth()->id();
+
+        $company = $user->company;
+        try {
+            $company['director'] = $user->find($company->director_id);
+        } catch (\Exception $error) {
+            $company['director'] = $error->getMessage();
+        }
+        $user['company'] = $company;
+
+        return response()->json([
+            'user' => $user,
+            'success' => true,
+        ]);
     }
 
     /**
@@ -88,7 +122,7 @@ class AuthController extends Controller
     /**
      * Get the token array structure.
      *
-     * @param  string $token
+     * @param string $token
      *
      * @return \Illuminate\Http\JsonResponse
      */

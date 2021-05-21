@@ -6,55 +6,53 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+    use HasRoles;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'name', 'email', 'password',
+        'login', 'email', 'password',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
+    protected $guard_name = 'api';
+
+    protected $attributes = [
+        'name' => '',
+        'surname' => '',
+        'patronymic' => '',
+        'phone' => '',
+        'company_id' => 0,
+        'max_discount' => '0',
+        'project_visibility' => '0'
+    ];
+
     protected $hidden = [
         'password', 'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * Get the identifier that will be stored in the subject claim of the JWT.
-     *
-     * @return mixed
-    */
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
 
-    /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
-    *
-    * @return array
-    */
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function projects() {
+        return $this->hasMany('App\Models\Project', 'manager_id', 'id');
+    }
+
+    public function company() {
+        $company = $this->hasOne('App\Models\Company', 'id', 'company_id');
+        return $company;
     }
 }
